@@ -1,0 +1,47 @@
+# Site settings
+title: Maida's Blog
+email: 624486877@qq.com
+description: Maida's Blog # this means to ignore newlines until "baseurl:"
+baseurl: "" # the subpath of your site, e.g. /blog/
+url: https://lzc6244.github.io/ # the base hostname & protocol for your site
+author: maida
+addthis_id: ra-5df468d96dba2324
+
+# Sidebar filter
+# Choose 'tag' or 'category' as filter in sidebar.
+filter: 'category'
+recent_num: 20
+
+# Social account
+#twitter: xxxxx
+#weibo: xxxxx
+github: LZC6244
+zhihu: mai-da-3
+#instagram: xxxxx
+#linkedin: xxxxx
+
+# avatar and Favicon
+avatar: /imgs/gravatar.jpg
+favicon: /favicons/favicon.ico
+
+# disqus config
+disqus:
+  shortname: https-lzc6244-github-io
+
+# Google Analytics config
+gaid: UA-154779982-1
+
+# Build settings
+permalink: /:year/:month/:day/:title.html
+markdown: kramdown
+highlighter: rouge
+mathjax: disabled
+sass:
+  style: compressed
+
+# Jekyll Plugin
+# https://help.github.com/articles/adding-jekyll-plugins-to-a-github-pages-site/
+gems:
+  - jekyll-sitemap
+  - jekyll-seo-tag
+  - jekyll-feed
