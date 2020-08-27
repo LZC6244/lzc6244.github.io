@@ -31,6 +31,12 @@ disqus:
 # Google Analytics config
 gaid: UA-154779982-1
 
+# Lean Cloud config
+leancloud:
+  enable: true
+  app_id: 2CkNeL80sKUnEXoOPFBUDaD6-9Nh9j0Va
+  app_key: a5PNjyAJih3Cwh6WXxnMVlUq
+
 # Build settings
 permalink: /:year/:month/:day/:title.html
 markdown: kramdown
