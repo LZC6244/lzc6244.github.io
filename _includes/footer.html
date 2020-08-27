@@ -13,7 +13,7 @@
       var query = new AV.Query(Counter);
 
       // 只根据文章的url查询LeanCloud服务器中的数据
-      query.equalTo("post_url", url);
+      query.equalTo("article_url", url);
       query.find({
         success: function(results) {
           if (results.length > 0) {//说明LeanCloud中已经记录了这篇文章
@@ -39,8 +39,8 @@
             acl.setPublicWriteAccess(true);
             newcounter.setACL(acl);
             /* End Set ACL */
-            newcounter.set("post_title", title);// 把文章标题
-            newcounter.set("post_url", url); // 文章url
+            newcounter.set("article_title", title);// 把文章标题
+            newcounter.set("article_url", url); // 文章url
             newcounter.set("visited_times", 1); // 初始点击次数：1次
             newcounter.save(null, { // 上传到LeanCloud服务器中
               success: function(newcounter) {
@@ -68,7 +68,7 @@
       var query = new AV.Query(Counter);
 
       // 只根据文章的url查询LeanCloud服务器中的数据
-      query.equalTo("post_url", url);
+      query.equalTo("article_url", url);
       query.find({
         success: function(results) {
           if (results.length > 0) {//说明LeanCloud中已经记录了这篇文章
@@ -111,12 +111,12 @@
       var Visitor = AV.Object.extend("visitors_record");
 
       var $postInfo = $(".leancloud_visitors");
-      var post_url = $postInfo.attr('id').trim();
+      var article_url = $postInfo.attr('id').trim();
 
       var query = new AV.Query(Visitor);
 
       query.equalTo("visitor_ip", ip);
-      query.equalTo("post_url", post_url);
+      query.equalTo("article_url", article_url);
       query.find({
         success: function(results) {
           if (results.length > 0) {
@@ -157,7 +157,7 @@
             acl.setPublicWriteAccess(true);
             newVisitor.setACL(acl);
             newVisitor.set("visitor_ip", ip);
-            newVisitor.set("post_url", post_url);
+            newVisitor.set("article_url", article_url);
             newVisitor.save(null, { // 上传到LeanCloud服务器中
               success: function(newVisitor) { },
               error: function(newVisitor, error) {
