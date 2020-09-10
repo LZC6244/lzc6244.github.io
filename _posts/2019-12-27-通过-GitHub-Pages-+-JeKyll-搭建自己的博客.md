@@ -14,7 +14,7 @@ tags:
 记录了自己使用通过 GitHub Pages + JeKyll 搭建博客的过程。  
 以及在这个过程中碰到的困难和解决方式。  
 **项目地址：**[lzc6244.github.io](https://github.com/LZC6244/lzc6244.github.io)  
-**LiveDemo：**[maida6244.xyz](https://maida6244.xyz/)
+**LiveDemo：**[http://lzc6244.github.io/](http://lzc6244.github.io/)
 
 ### 环境需求
 - 一个属于你自己的 GitHub 帐号

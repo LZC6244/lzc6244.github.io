@@ -21,11 +21,12 @@ tags:
 ### 使用示例
 crontab 中 
 原（以每分钟启动为例）
-```shell script
+```text
 */1 * * * * python test.py
 ```
+
 更改为
-```shell script
+```text
 */1 * * * * flock -xn test.lock -c "python test.py"
 ```
 
