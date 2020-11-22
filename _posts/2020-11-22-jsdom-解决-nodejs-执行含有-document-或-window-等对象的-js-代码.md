@@ -13,7 +13,7 @@ tags:
 ## 环境需求
 1. 已安装 nodejs ，[点此去安装](https://nodejs.org/zh-cn/download/)
 2. 查看 node 模块全局路径，`npm -g root`
-2. 在环境变量中添加 'NODE_PATH' 变量，值为上述 node 模块全局路径
+2. 在环境变量中添加 `NODE_PATH` 变量，值为上述 node 模块全局路径
 3. 安装 jsdom ，以下是全局安装 jsdom （可在任意地方调用 jsdom ，不局限于执行安装命令时的路径）  
     ```bash
     npm -g install jsdom 
