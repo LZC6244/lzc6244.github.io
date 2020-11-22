@@ -1,6 +1,6 @@
 ### 在线预览
 
-[https://maida6244.xyz/](https://maida6244.xyz/)
+[https://lzc6244.github.io/](https://lzc6244.github.io/)
 
 ### 使用方法
 
