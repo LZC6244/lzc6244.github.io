@@ -34,4 +34,4 @@ XMLHttpRequest = window.XMLHttpRequest;
 ## 推荐链接
 1. [jsdom GitHub 地址](https://github.com/jsdom/jsdom)
 2. [Ubuntu 安装 nodejs](https://nodejs.org/zh-cn/download/package-manager/#debian-and-ubuntu-based-linux-distributions-enterprise-linux-fedora-and-snap-packages)
-3. [pycharm 运行 js](https://maida6244.xyz/2020/11/22/pycharm-%E8%BF%90%E8%A1%8C-js-%E4%BB%A3%E7%A0%81.html)
+3. [pycharm 运行 js](/2020/11/22/pycharm-%E8%BF%90%E8%A1%8C-js-%E4%BB%A3%E7%A0%81.html)
