@@ -10,7 +10,7 @@ addthis_id: ra-5df468d96dba2324
 # Sidebar filter
 # Choose 'tag' or 'category' as filter in sidebar.
 filter: 'category'
-recent_num: 20
+recent_num: 50
 
 # Social account
 #twitter: xxxxx

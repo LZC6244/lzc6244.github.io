@@ -21,6 +21,7 @@
         ```
     - 浏览器打开 `http://127.0.0.1:4000/` 访问测试
     
+- 允许远程访问，将运行命令更改为 `jekyll serve --host=0.0.0.0`
 
 ### JeKyll 说明
 1. 基于 [suyan.github.io](https://github.com/suyan/suyan.github.io)
