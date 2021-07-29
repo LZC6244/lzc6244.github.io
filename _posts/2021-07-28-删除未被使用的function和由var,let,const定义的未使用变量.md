@@ -30,6 +30,14 @@ function test_1() {
 function test_2() {
     console.log('I\'m test_2.');
 }
+
+function g() {
+    var g = 1;
+    g += 1;
+    g += 1;
+    console.log('g is ' + g)
+}
+
 test_2();
 ```
 
@@ -86,30 +94,53 @@ visitor =
   }
 }
 ```
+**但是**，有这么一种特殊情况，若是函数中存在变量与函数名相同，且该变量被使用/引用  
+那么按照上述的处理方式该函数若是未被使用是**不会被删除**的  
+使用 `path.scope.dump()` 可以看到按此方式获取 binding 显然 `g` 函数是被“使用”了的  
+![path-scope-dump](/imgs/JeKyll/2021/07282043_01.png)  
+因为我们现在所处的作用域是函数作用域  
+所以我们要判断该函数是否被使用应该从程序（program）作用域出发  
+如下吗，即可正确获取函数是否被使用情况  
+![path-scope-dump](/imgs/JeKyll/2021/07282043_02.png)  
 <br>  
 
-完整插件代码如下  
+故，最终、完整插件代码如下  
 ```javascript
 // decrypt.js
 const fs = require('fs');
+var util = require('util');
 const parser = require('@babel/parser');
 const traverse = require('@babel/traverse').default;
 const types = require('@babel/types');
 const generator = require('@babel/generator').default;
 
+// 程序启动时间
+var time_start = new Date().getTime()
 // 读取文件
 process.argv.length > 2 ? encode_file = process.argv[2] : encode_file = 'encode.js';
 process.argv.length > 3 ? decode_file = process.argv[3] : decode_file = 'decode.js';
 
 let jscode = fs.readFileSync(encode_file, { encoding: 'utf-8' });
+console.log(util.format('Reading the file [%s] is complete.', encode_file))
 // 转换为 ast 树
 let ast = parser.parse(jscode);
 
 const visitor =
 {
-  'VariableDeclarator|FunctionDeclaration'(path) {
+  VariableDeclarator(path) {
     const { id } = path.node;
     let binding = path.scope.getBinding(id.name);
+
+    if (binding.referenced) {
+      return;
+    }
+    path.remove();
+  },
+  FunctionDeclaration(path) {
+    const { id } = path.node;
+    // 防止函数中存在变量与函数名相同，切该变量在函数中使用，导致未去除未使用函数
+    let binding = path.scope.parent.getBinding(id.name);
+
     if (binding.referenced) {
       return;
     }
@@ -119,18 +150,65 @@ const visitor =
 
 //调用插件，处理待处理 js ast 树
 traverse(ast, visitor);
+console.log('AST traverse completed.')
 
 // 生成处理后的 js
-// let { code } = generator(ast);
-let { code } = generator(ast, opts = { retainLines: true });
-// 打印处理后的 js
-console.log(code);
+let { code } = generator(ast);
+console.log('AST generator completed.')
 fs.writeFile(decode_file, code, (err) => { });
+console.log(util.format('The javascript code in [%s] has been processed.', encode_file))
+console.log(util.format('The processing result has been saved to [%s].', decode_file))
+// 程序结束时间
+var time_end = new Date().getTime()
+console.log(util.format('The program runs to completion, time-consuming: %s s', (time_end - time_start) / 1000))
 ```
 
 ### 推荐阅读
 - [AST 入门](/2021/07/27/AST入门.html)
 - [Babel 小技巧](/2021/07/28/Babel-小技巧.html)
+- `path.scope.getBinding` 源码（显然自下而上遍历）
+   ```javascript
+   getBinding(name) {
+       let scope = this;
+       let previousPath;
+   
+       do {
+         const binding = scope.getOwnBinding(name);
+   
+         if (binding) {
+           var _previousPath;
+   
+           if ((_previousPath = previousPath) != null && _previousPath.isPattern() && binding.kind !== "param") {} else {
+             return binding;
+           }
+         }
+   
+         previousPath = scope.path;
+       } while (scope = scope.parent);
+     }
+   ```
+- `path.scope.dump` 源码（显然自下而上遍历）
+   ```javascript
+   dump() {
+       const sep = "-".repeat(60);
+       console.log(sep);
+       let scope: Scope = this;
+       do {
+         console.log("#", scope.block.type);
+         for (const name of Object.keys(scope.bindings)) {
+           const binding = scope.bindings[name];
+           console.log(" -", name, {
+             constant: binding.constant,
+             references: binding.references,
+             violations: binding.constantViolations.length,
+             kind: binding.kind,
+           });
+         }
+       } while ((scope = scope.parent));
+       console.log(sep);
+     }
+   ```
+
 
 ### 参考
 - [Babel 手册 - Bindings](https://github.com/jamiebuilds/babel-handbook/blob/master/translations/zh-Hans/plugin-handbook.md#bindings%E7%BB%91%E5%AE%9A)
