@@ -54,7 +54,7 @@ while (true) {
             console.log('This is case 8');
             continue;
         case '9':
-            console.log('This is case ');
+            console.log('This is case 9');
             continue;
         default:
             console.log('This is case [default], exit loop.');
@@ -154,4 +154,3 @@ console.log(util.format('The program runs to completion, time-consuming: %s s', 
 
 ### 参考
 - [Babel 手册 - Bindings](https://github.com/jamiebuilds/babel-handbook/blob/master/translations/zh-Hans/plugin-handbook.md#bindings%E7%BB%91%E5%AE%9A)
-- `@babel/types` 文档中的 [Literal](https://babeljs.io/docs/en/babel-types#literal)
