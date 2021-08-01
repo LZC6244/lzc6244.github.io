@@ -81,11 +81,10 @@ console.log('This is case [default], exit loop.');
 ### 思路
 还原前的代码执行逻辑大致是：  
 - 利用 `array[index++]` 数组下标控制整个 while-switch 的执行流程
-- 最后 `array[index++]` 为 **undefined**， 跳出整个 while 循环
-- 废话不多说，直接看完整代码
+- 最后 `array[index++]` 为 **undefined**， 跳出整个 while 循环  
 
 ### 编写 babel 插件
-完整插件代码  
+废话不多说，完整插件代码  
 ```javascript
 // decrypt.js
 const fs = require('fs');
