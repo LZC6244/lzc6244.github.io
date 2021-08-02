@@ -125,10 +125,31 @@ const visitor =
     if (!confident) {
       return;
     }
-    let array = value, case_map = {};
-    for (i of array) {
-      case_map[i] = i;
+    let array = value, case_map = {}, tmp_array = [];
+
+    for (let c of cases) {
+      let { consequent, test } = c;
+      let test_value;
+      if (test) {
+        test_value = test.value;
+      }
+      else {
+        test_value = 'default_case';
+      }
+      let statement_array = [];
+      for (let i of consequent) {
+        if (types.isContinueStatement(i)) {
+          continue;
+        }
+        statement_array.push(i);
+      }
+      case_map[test_value] = statement_array;
     }
+    for (let i of array) {
+      tmp_array = tmp_array.concat(case_map[i])
+    }
+    tmp_array = tmp_array.concat(case_map['default_case'])
+    path.replaceWithMultiple(tmp_array);
 
   }
 }
@@ -151,6 +172,7 @@ console.log(util.format('The program runs to completion, time-consuming: %s s', 
 ### 推荐阅读
 - [AST 入门](/2021/07/27/AST入门.html)
 - [Babel 小技巧](/2021/07/28/Babel-小技巧.html)
+- [去控制流平坦化之for-switch](/2021/08/01/去控制流平坦化之for-switch.html)
 
 ### 参考
 - [Babel 手册 - Bindings](https://github.com/jamiebuilds/babel-handbook/blob/master/translations/zh-Hans/plugin-handbook.md#bindings%E7%BB%91%E5%AE%9A)
