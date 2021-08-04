@@ -1,6 +1,6 @@
 ---
 layout:     post  
-title:      删除未被使用的 function 和由 var,let,const 定义的未使用变量
+title:      Babel 删除未被使用的 function 和由 var,let,const 定义的未使用变量
 date:       2021-07-28 20:43   
 author:     maida  
 categories: [Babel&nbsp;AST]  
@@ -164,7 +164,7 @@ console.log(util.format('The program runs to completion, time-consuming: %s s', 
 ```
 
 ### 推荐阅读
-- [AST 入门](/2021/07/27/AST入门.html)
+- [Babel AST 入门](/2021/07/27/Babel-AST入门.html)
 - [Babel 小技巧](/2021/07/28/Babel-小技巧.html)
 - `path.scope.getBinding` 源码（显然自下而上遍历）
    ```javascript

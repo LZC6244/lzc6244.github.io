@@ -1,7 +1,7 @@
 ---
 layout:     post  
-title:      去控制流平坦化之for-switch
-date:       2021-08-01 17:53   
+title:      Babel 去控制流平坦化之while-switch
+date:       2021-07-30 21:11   
 author:     maida  
 categories: [Babel&nbsp;AST]  
 tags:  
@@ -22,48 +22,41 @@ tags:
 
 下面是代码样例(encode.js)  
 ```javascript
-for (let index = '0'; index !== '11';) {
-    switch (index) {
+var array = '4|3|8|5|4|0|2|3'.split('|'), index = 0;
+
+while (true) {
+    switch (array[index++]) {
         case '0':
             console.log('This is case 0');
-            index = '6';
             continue;
         case '1':
             console.log('This is case 1');
-            index = '2';
             continue;
         case '2':
             console.log('This is case 2');
-            index = '4';
             continue;
         case '3':
-            index = '7';
             console.log('This is case 3');
             continue;
         case '4':
             console.log('This is case 4');
-            index = '3';
             continue;
         case '5':
             console.log('This is case 5');
             continue;
         case '6':
             console.log('This is case 6');
-            index = '9';
             continue;
         case '7':
             console.log('This is case 7');
-            index = '10';
             continue;
         case '8':
             console.log('This is case 8');
             continue;
         case '9':
             console.log('This is case 9');
-            index = '1';
             continue;
         default:
-            index = '11';
             console.log('This is case [default], exit loop.');
     }
     break;
@@ -72,23 +65,23 @@ for (let index = '0'; index !== '11';) {
 
 处理后代码(decode.js)
 ```javascript
-console.log('This is case 0');
-console.log('This is case 6');
-console.log('This is case 9');
-console.log('This is case 1');
-console.log('This is case 2');
+var array = '4|3|8|5|4|0|2|3'.split('|'),
+    index = 0;
 console.log('This is case 4');
 console.log('This is case 3');
-console.log('This is case 7');
+console.log('This is case 8');
+console.log('This is case 5');
+console.log('This is case 4');
+console.log('This is case 0');
+console.log('This is case 2');
+console.log('This is case 3');
 console.log('This is case [default], exit loop.');
 ```
 
 ### 思路
 还原前的代码执行逻辑大致是：  
-- 利用 `index` 值控制整个 for-switch 的执行流程
-- 最后 `index` 为 **'12'**， 跳出整个 for 循环  
-
-**PS: index 值在每个 case 必然是会变更的，不然还原前的代码本身便是死循环了**
+- 利用 `array[index++]` 数组下标控制整个 while-switch 的执行流程
+- 最后 `array[index++]` 为 **undefined**， 跳出整个 while 循环  
 
 ### 编写 babel 插件
 废话不多说，完整插件代码  
@@ -114,73 +107,50 @@ let ast = parser.parse(jscode);
 
 const visitor =
 {
-  ForStatement(path) {
-    let { init, test, body } = path.node;
-    if (!types.isVariableDeclaration(init) || !types.isBinaryExpression(test)) {
-      return;
-    }
-    let declaration = init.declarations[0];
-
-    const init_name = declaration.id.name;
-    let init_value = declaration.init.value;
-    let { left, operator, right } = test;
-
-    if (!types.isIdentifier(left, { 'name': init_name }) || operator !== '!==') {
-      return;
-    }
-    let test_value = right.value;
-
+  WhileStatement(path) {
+    let { body } = path.node;
     let switch_statement = body.body[0];
     if (!types.isSwitchStatement(switch_statement)) {
       return;
     }
     let { discriminant, cases } = switch_statement;
-    if (!types.isIdentifier(discriminant, { 'name': init_name })) {
+    // 进一步进行特征判断
+    if (!types.isMemberExpression(discriminant) || !types.isUpdateExpression(discriminant.property)) {
       return;
     }
-    // 存储 switch case 相关映射
-    let case_map = {};
-    // 存储最终代码语句节点
-    let tmp_array = [];
+
+    // 找到 array 是哪定义的，并且使用 path.evaluate() 方法获取其最终值
+    let { confident, value } = path.scope.getBinding(discriminant.object.name).referencePaths[0].evaluate();
+
+    if (!confident) {
+      return;
+    }
+    let array = value, case_map = {}, tmp_array = [];
+
     for (let c of cases) {
-      let { consequent, test } = c, case_test_value;
+      let { consequent, test } = c;
+      let test_value;
       if (test) {
-        case_test_value = test.value;
+        test_value = test.value;
       }
       else {
-        case_test_value = 'default_case';
+        test_value = 'default_case';
       }
-      case_map[case_test_value] = { 'new_init_value': null, 'statement_array': [] };
+      let statement_array = [];
       for (let i of consequent) {
         if (types.isContinueStatement(i)) {
           continue;
         }
-        if (types.isExpressionStatement(i) && types.isAssignmentExpression(i.expression)) {
-          let left_name = i.expression.left.name;
-          if (left_name !== init_name) {
-            continue;
-          }
-          case_map[case_test_value]['new_init_value'] = i.expression.right.value;
-          continue;
-        }
-        case_map[case_test_value]['statement_array'].push(i);
+        statement_array.push(i);
       }
+      case_map[test_value] = statement_array;
     }
-
-    while (true) {
-      tmp_array = tmp_array.concat(case_map[init_value]['statement_array'])
-      init_value = case_map[init_value]['new_init_value']
-
-      if (init_value === test_value) {
-        break;
-      }
-
-      if (!case_map[init_value]) {
-        init_value = 'default_case';
-      }
+    for (let i of array) {
+      tmp_array = tmp_array.concat(case_map[i])
     }
-
+    tmp_array = tmp_array.concat(case_map['default_case'])
     path.replaceWithMultiple(tmp_array);
+
   }
 }
 
@@ -200,6 +170,9 @@ console.log(util.format('The program runs to completion, time-consuming: %s s', 
 ```
 
 ### 推荐阅读
-- [AST 入门](/2021/07/27/AST入门.html)
+- [Babel AST 入门](/2021/07/27/Babel-AST入门.html)
 - [Babel 小技巧](/2021/07/28/Babel-小技巧.html)
-- [去控制流平坦化之while-switch](/2021/07/30/去控制流平坦化之while-switch.html)
+- [Babel 去控制流平坦化之for-switch](/2021/08/01/Babel去控制流平坦化之for-switch.html)
+
+### 参考
+- [Babel 手册 - Bindings](https://github.com/jamiebuilds/babel-handbook/blob/master/translations/zh-Hans/plugin-handbook.md#bindings%E7%BB%91%E5%AE%9A)

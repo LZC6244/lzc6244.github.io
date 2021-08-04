@@ -1,6 +1,6 @@
 ---
 layout:     post  
-title:      还原由 var,let,const 定义的未变更的字面量  
+title:      Babel 还原由 var,let,const 定义的未变更的字面量  
 date:       2021-07-29 20:30   
 author:     maida  
 categories: [Babel&nbsp;AST]  
@@ -98,7 +98,7 @@ console.log(util.format('The program runs to completion, time-consuming: %s s', 
 ```
 
 ### 推荐阅读
-- [AST 入门](/2021/07/27/AST入门.html)
+- [Babel AST 入门](/2021/07/27/Babel-AST入门.html)
 - [Babel 小技巧](/2021/07/28/Babel-小技巧.html)
 
 ### 参考

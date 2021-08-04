@@ -23,5 +23,5 @@ tags:
 
 ### 推荐阅读
 - [Babel GitHub evaluation.ts](https://github.com/babel/babel/blob/e0dc925bbe148022df6b43dd6965ebca661915fc/packages/babel-traverse/src/path/evaluation.ts#L5)
-- [AST 入门](/2021/07/27/AST入门.html)
+- [Babel AST 入门](/2021/07/27/Babel-AST入门.html)
 - [Babel 小技巧](/2021/07/28/Babel-小技巧.html)

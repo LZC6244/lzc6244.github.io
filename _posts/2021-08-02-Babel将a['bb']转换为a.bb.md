@@ -1,6 +1,6 @@
 ---
 layout:     post  
-title:      将 a['bb'] 转换为 a.bb
+title:      Babel 将 a['bb'] 转换为 a.bb
 date:       2021-08-02 20:03  
 author:     maida  
 categories: [Babel&nbsp;AST]  
@@ -92,5 +92,5 @@ console.log(util.format('The program runs to completion, time-consuming: %s s', 
 ```
 
 ### 推荐阅读
-- [AST 入门](/2021/07/27/AST入门.html)
+- [Babel AST 入门](/2021/07/27/Babel-AST入门.html)
 - [Babel 小技巧](/2021/07/28/Babel-小技巧.html)
