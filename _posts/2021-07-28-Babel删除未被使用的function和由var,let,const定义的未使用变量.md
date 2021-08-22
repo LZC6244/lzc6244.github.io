@@ -135,16 +135,19 @@ const visitor =
       return;
     }
     path.remove();
+    path.scope.crawl();
   },
   FunctionDeclaration(path) {
     const { id } = path.node;
-    // 防止函数中存在变量与函数名相同，切该变量在函数中使用，导致未去除未使用函数
+    // 防止函数中存在变量与函数名相同，且该变量在函数中使用，导致未去除未使用函数
     let binding = path.scope.parent.getBinding(id.name);
 
     if (binding.referenced) {
       return;
     }
     path.remove();
+    // 手动更新 scope ，防止影响下个插件使用
+    path.scope.crawl();
   }
 }
 

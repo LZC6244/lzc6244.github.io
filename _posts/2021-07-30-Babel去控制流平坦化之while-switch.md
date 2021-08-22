@@ -120,7 +120,7 @@ const visitor =
     }
 
     // 找到 array 是哪定义的，并且使用 path.evaluate() 方法获取其最终值
-    let { confident, value } = path.scope.getBinding(discriminant.object.name).referencePaths[0].evaluate();
+    let { confident, value } = path.scope.getBinding(discriminant.object.name).path.get('init').evaluate();
 
     if (!confident) {
       return;
@@ -148,9 +148,12 @@ const visitor =
     for (let i of array) {
       tmp_array = tmp_array.concat(case_map[i])
     }
-    tmp_array = tmp_array.concat(case_map['default_case'])
+    if (case_map.hasOwnProperty('default_case')) {
+        tmp_array = tmp_array.concat(case_map['default_case'])
+    }
     path.replaceWithMultiple(tmp_array);
-
+    // 手动更新 scope ，防止影响下个插件使用
+    path.scope.crawl();
   }
 }
 
