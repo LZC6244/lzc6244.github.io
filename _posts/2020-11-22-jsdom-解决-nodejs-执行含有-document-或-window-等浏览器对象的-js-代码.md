@@ -3,9 +3,10 @@ layout:     post
 title:      jsdom 解决 nodejs 执行含有 document 或 window 等浏览器对象的 js 代码
 date:       2020-11-22 12:37
 author:     maida
-categories: [Python&nbsp;爬虫]
+categories: [Python,爬虫]
 tags:
- - Python&nbsp;爬虫
+ - Python
+ - 爬虫
  - nodejs
  - jsdom
 ---
