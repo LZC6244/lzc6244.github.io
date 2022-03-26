@@ -3,7 +3,7 @@ layout:     post
 title:      Python 规整 MongoDB 首层字段
 date:       2020-03-05 23:26
 author:     maida
-categories: [Python&nbsp;爬虫]
+categories: [Python,爬虫]
 tags:
  - Python
  - MongoDB

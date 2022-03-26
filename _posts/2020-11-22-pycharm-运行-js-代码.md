@@ -3,9 +3,10 @@ layout:     post
 title:      pycharm 运行 js 代码
 date:       2020-11-22 10:22
 author:     maida
-categories: [Python&nbsp;爬虫]
+categories: [Python,爬虫]
 tags:
- - Python&nbsp;爬虫
+ - Python
+ - 爬虫
  - JavaScript
  - nodejs
 ---
