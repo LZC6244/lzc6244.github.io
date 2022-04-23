@@ -1,9 +1,10 @@
 ---
-layout:     post
-title:      通过 GitHub Pages + JeKyll 搭建自己的博客
-date:       2019-12-27 20:44
-author:     maida
-categories: [JeKyll]
+layout:         post
+title:          通过 GitHub Pages + JeKyll 搭建自己的博客
+create_time:    2019-12-27 20:44
+update_time:    2022-04-16 15:02
+author:         maida
+categories:     [JeKyll]
 tags: 
 - GitHub Pages
 - JeKyll

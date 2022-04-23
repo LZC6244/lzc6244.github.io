@@ -1,9 +1,9 @@
 ---
-layout:     post  
-title:      Babel 将 a['bb'] 转换为 a.bb
-date:       2021-08-02 20:03  
-author:     maida  
-categories: [Babel&nbsp;AST]  
+layout:         post  
+title:          Babel 将 a['bb'] 转换为 a.bb
+create_time:    2021-08-02 20:03  
+author:         maida  
+categories:     [Babel&nbsp;AST]  
 tags:  
  - Babel
  - AST

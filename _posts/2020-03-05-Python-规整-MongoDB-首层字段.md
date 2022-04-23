@@ -1,9 +1,9 @@
 ---
-layout:     post
-title:      Python 规整 MongoDB 首层字段
-date:       2020-03-05 23:26
-author:     maida
-categories: [Python,爬虫]
+layout:         post
+title:          Python 规整 MongoDB 首层字段
+create_time:    2020-03-05 23:26
+author:         maida
+categories:     [Python,爬虫]
 tags:
  - Python
  - MongoDB

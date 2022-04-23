@@ -1,9 +1,9 @@
 ---
-layout:     post  
-title:      Babel 删除未被使用的 function 和由 var,let,const 定义的未使用变量
-date:       2021-07-28 20:43   
-author:     maida  
-categories: [Babel&nbsp;AST]  
+layout:         post  
+title:          Babel 删除未被使用的 function 和由 var,let,const 定义的未使用变量
+create_time:    2021-07-28 20:43   
+author:         maida  
+categories:     [Babel&nbsp;AST]  
 tags:  
  - Babel
  - AST

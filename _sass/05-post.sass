@@ -43,9 +43,13 @@ h1 + h2, h2 + h3, h3 + h4, h4 + h5, h5 + h6
     color: $post-meta-color
     &-span
       margin-right: 1em
-      &.date:before
+      &.create_time:before
         @extend %icon
-        @extend %icon-clock
+        @extend %icon-create-time
+        margin-right: .2em
+      &.update_time:before
+        @extend %icon
+        @extend %icon-update-time
         margin-right: .2em
       &.tag:before
         @extend %icon

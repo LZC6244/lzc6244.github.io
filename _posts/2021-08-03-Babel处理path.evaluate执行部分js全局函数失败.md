@@ -1,9 +1,9 @@
 ---
-layout:     post  
-title:      Babel 处理 path.evaluate 执行部分 js 全局函数失败
-date:       2021-08-03 19:23  
-author:     maida  
-categories: [Babel&nbsp;AST]  
+layout:         post  
+title:          Babel 处理 path.evaluate 执行部分 js 全局函数失败
+create_time:    2021-08-03 19:23  
+author:         maida  
+categories:     [Babel&nbsp;AST]  
 tags:  
  - Babel
  - AST
