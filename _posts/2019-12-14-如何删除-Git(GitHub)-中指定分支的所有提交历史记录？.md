@@ -1,9 +1,9 @@
 ---
-layout:     post
-title:      如何删除 Git/GitHub 中指定分支的所有提交历史记录？
-date:       2019-12-14 14:29
-author:     maida
-categories: [Git]
+layout:         post
+title:          如何删除 Git/GitHub 中指定分支的所有提交历史记录？
+create_time:    2019-12-14 14:29
+author:         maida
+categories:     [Git]
 tags:
  - Git
  - VCS

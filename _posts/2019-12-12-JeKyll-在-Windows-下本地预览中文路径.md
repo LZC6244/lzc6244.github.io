@@ -1,8 +1,8 @@
 ---
-layout:     post
-title:      JeKyll 在 Windows 下本地预览中文路径
-date:       2019-12-12 21:30
-author:     maida
+layout:         post
+title:          JeKyll 在 Windows 下本地预览中文路径
+create_time:    2019-12-12 21:30
+author:         maida
 category: [JeKyll]
 tags:
  - JeKyll

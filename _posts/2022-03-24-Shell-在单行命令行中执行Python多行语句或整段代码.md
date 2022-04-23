@@ -1,9 +1,9 @@
 ---
-layout:     post
-title:      Shell 在单行命令行中执行 Python 多行语句/整段代码
-date:       2022-03-24 20:32
-author:     maida
-categories: [Python,Shell]
+layout:         post
+title:          Shell 在单行命令行中执行 Python 多行语句/整段代码
+create_time:    2022-03-24 20:32
+author:         maida
+categories:     [Python,Shell]
 tags:
  - Python
  - Shell

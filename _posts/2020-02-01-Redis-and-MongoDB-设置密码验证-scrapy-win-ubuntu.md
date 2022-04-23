@@ -1,9 +1,9 @@
 ---
-layout:     post
-title:      Redis and MongoDB 设置密码验证(scrapy)(win)(ubuntu)
-date:       2020-02-01 11:01
-author:     maida
-categories: [Ubuntu]
+layout:         post
+title:          Redis and MongoDB 设置密码验证(scrapy)(win)(ubuntu)
+create_time:    2020-02-01 11:01
+author:         maida
+categories:     [Ubuntu]
 tags:
  - Ubuntu
  - Redis

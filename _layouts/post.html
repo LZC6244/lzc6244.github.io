@@ -3,7 +3,12 @@ layout: default
 ---
 <article class="post container">
   <div class="post-meta">
-    <span class="post-meta-span date">{{ page.date | date:"%Y.%m.%d" }}</span>
+    {% if page.create_time %}
+    <span class="post-meta-span create_time">创建时间：{{ page.create_time | date: "%Y.%m.%d" }}</span>
+    {% endif %}
+    {% if page.update_time %}
+    <span class="post-meta-span update_time">更新时间：{{ page.update_time | date: "%Y.%m.%d" }}</span>
+    {% endif %}
     {% if page.tags.size > 0 %}
     <span class="post-meta-span tag">{{ page.tags | join: ', ' }}</span>
     {% endif %}

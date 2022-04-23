@@ -1,7 +1,7 @@
 ---
-title:      Maida's Blog
-layout:     post
-author:     maida
+title:          Maida's Blog
+layout:         post
+author:         maida
 tags:
  - 主页
 ---
