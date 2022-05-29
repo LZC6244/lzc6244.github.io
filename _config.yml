@@ -34,6 +34,8 @@ gaid: UA-154779982-1
 # Build settings
 permalink: /:year/:month/:day/:title.html
 markdown: kramdown
+kramdown:
+  parse_block_html: true
 highlighter: rouge
 mathjax: disabled
 sass:
