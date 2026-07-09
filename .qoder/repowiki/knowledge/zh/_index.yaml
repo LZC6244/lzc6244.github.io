@@ -1,0 +1,43 @@
+# 知识卡导出索引文件
+schema_version: 1
+locale: zh-CN
+branch: master
+nodes_managed: true
+exported_at: "2026-07-08T01:49:48Z"
+modules:
+    "":
+        dir_name: Jekyll 个人博客站点（Minima 主题定制）
+        title: Jekyll 个人博客站点（Minima 主题定制）
+        scope:
+            - .gitignore
+            - 404.html
+            - _config.yml
+            - _includes/
+            - _layouts/
+            - _plugins/
+            - _posts/
+            - Gemfile
+            - Gemfile.lock
+            - README.md
+            - assets/
+            - favicons/
+            - files/
+            - google885a265086f3db62.html
+            - ie.html
+            - index.md
+            - jsconfig.json
+            - pages/
+            - search.json
+            - wechat_share.html
+            - LICENSE
+            - screenshot_blogpost.png
+            - screenshot_homepage.png
+            - screenshot_toc_closed.png
+            - screenshot_toc_open.png
+            - search_test_milvus.png
+            - search_test_milvus_results.png
+            - search_test_milvus_viewport.png
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []

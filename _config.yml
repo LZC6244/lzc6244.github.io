@@ -1,26 +1,27 @@
 # Site settings
-title: Maida's Blog
+title: 看看你极限深蓝的 Blog
 email: 624486877@qq.com
-description: Maida's Blog # this means to ignore newlines until "baseurl:"
-baseurl: "" # the subpath of your site, e.g. /blog/
-url: https://lzc6244.github.io/ # the base hostname & protocol for your site
-author: maida
-addthis_id: ra-5df468d96dba2324
+description: 看看你极限深蓝的 Blog
+baseurl: ""
+url: https://lzc6244.github.io/
+author: 看看你极限深蓝
 
-# Sidebar filter
-# Choose 'tag' or 'category' as filter in sidebar.
-filter: 'category'
-recent_num: 50
+# Theme
+theme: minima
 
-# Social account
-#twitter: xxxxx
-#weibo: xxxxx
-github: LZC6244
-zhihu: mai-da-3
-#instagram: xxxxx
-#linkedin: xxxxx
+# Minima skin (auto/classic/dark)
+minima:
+  skin: auto
+  date_format: "%Y-%m-%d"
 
-# avatar and Favicon
+# Header pages
+# 首页已通过 site-title 链接，无需重复添加
+
+# Social links
+github_username: LZC6244
+zhihu_username: mai-da-3
+
+# avatar
 avatar: /imgs/gravatar.jpg
 favicon: /favicons/favicon.ico
 
@@ -28,22 +29,16 @@ favicon: /favicons/favicon.ico
 disqus:
   shortname: https-lzc6244-github-io
 
-# Google Analytics config
-gaid: UA-154779982-1
+# Google Analytics
+google_analytics: UA-154779982-1
 
 # Build settings
 permalink: /:year/:month/:day/:title.html
 markdown: kramdown
-kramdown:
-  parse_block_html: true
 highlighter: rouge
-mathjax: disabled
-sass:
-  style: compressed
 
-# Jekyll Plugin
-# https://help.github.com/articles/adding-jekyll-plugins-to-a-github-pages-site/
-gems:
+# Plugins
+plugins:
   - jekyll-sitemap
   - jekyll-seo-tag
   - jekyll-feed

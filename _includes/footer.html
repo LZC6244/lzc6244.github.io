@@ -1,0 +1,33 @@
+<footer class="site-footer">
+  <div class="wrapper">
+    <div class="footer-inner">
+
+      <div class="footer-contact">
+        <a class="footer-link" href="mailto:{{ site.email }}">
+          <svg class="svg-icon" viewBox="0 0 16 16" width="16" height="16">
+            <path fill="currentColor" d="M1 3.5A1.5 1.5 0 0 1 2.5 2h11A1.5 1.5 0 0 1 15 3.5v.165l-6.5 4.2L2 3.664V3.5z"/>
+            <path fill="currentColor" d="M2 5.15v6.35A1.5 1.5 0 0 0 3.5 13h11a1.5 1.5 0 0 0 1.5-1.5V5.15l-6.09 3.935a.5.5 0 0 1-.52.038L2 5.15z"/>
+          </svg>
+          {{ site.email }}
+        </a>
+      </div>
+
+      <ul class="footer-social">
+        {%- if site.github_username -%}
+        <li>
+          <a href="https://github.com/{{ site.github_username }}">
+            <svg class="svg-icon"><use xlink:href="{{ "/assets/minima-social-icons.svg#github" | relative_url }}"></use></svg>
+            <span>{{ site.github_username }}</span>
+          </a>
+        </li>
+        {%- endif -%}
+      </ul>
+
+    </div>
+  </div>
+</footer>
+
+<!-- 搜索弹窗（放在 body 顶层，避免被 header 的 backdrop-filter 截断） -->
+<div id="search-results" class="search-results">
+  <button class="search-overlay-close" id="search-overlay-close">&times;</button>
+</div>

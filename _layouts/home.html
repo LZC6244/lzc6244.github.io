@@ -1,0 +1,152 @@
+---
+layout: default
+---
+{% assign view_toggle_id = "view-cat-date" %}
+<div class="home">
+  {%- if page.title -%}
+    <h1 class="page-heading">{{ page.title }}</h1>
+  {%- endif -%}
+
+  {{ content }}
+
+  {%- if site.posts.size > 0 -%}
+
+    <div class="view-toggle">
+      <span class="view-toggle-btn active" data-view="cat">📂 分类</span>
+      <span class="view-toggle-btn" data-view="date">📅 日期</span>
+    </div>
+
+    <div class="view-content view-cat">
+      {% assign sorted_cats = site.categories | sort %}
+      {% for cat in sorted_cats %}
+        {% assign cat_name = cat[0] %}
+        {% assign cat_posts = cat[1] %}
+
+        {%- comment -%} 统计直接文章数（categories.size == 1） {%- endcomment -%}
+        {% assign direct_count = 0 %}
+        {% for p in cat_posts %}
+          {% if p.categories.size == 1 and p.categories[0] == cat_name %}
+            {% assign direct_count = direct_count | plus: 1 %}
+          {% endif %}
+        {% endfor %}
+
+        {%- comment -%} 收集去重的子分类名 {%- endcomment -%}
+        {% assign sec_items = "" %}
+        {% for p in cat_posts %}
+          {% if p.categories.size > 1 and p.categories[0] == cat_name %}
+            {% assign sep = "|" %}
+            {% assign look = sep | append: p.categories[1] | append: sep %}
+            {% unless sec_items contains look %}
+              {% assign sec_items = sec_items | append: look %}
+            {% endunless %}
+          {% endif %}
+        {% endfor %}
+
+        {%- comment -%} 统计子分类文章总数 {%- endcomment -%}
+        {% assign sub_total = 0 %}
+        {% assign sec_array = sec_items | split: "|" %}
+        {% for sec in sec_array %}
+          {% if sec != "" %}
+            {% for p in cat_posts %}
+              {% if p.categories.size > 1 and p.categories[0] == cat_name and p.categories[1] == sec %}
+                {% assign sub_total = sub_total | plus: 1 %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+
+        {% assign top_count = direct_count | plus: sub_total %}
+
+        {% if top_count > 0 %}
+        <details class="archive-year">
+          <summary class="archive-year-title">{{ cat_name }} <span class="archive-count">{{ top_count }} 篇</span></summary>
+          <div class="archive-months">
+            {% if direct_count > 0 %}
+            <ul class="archive-post-list">
+              {% for p in cat_posts %}
+                {% if p.categories.size == 1 and p.categories[0] == cat_name %}
+                  <li>
+                    <a class="archive-post-link" href="{{ p.url | relative_url }}">{{ p.title }}</a>
+                  </li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+            {% endif %}
+
+            {% for sec in sec_array %}
+              {% if sec != "" %}
+                {% assign sec_name = sec %}
+                {% assign sec_count = 0 %}
+                {% for p in cat_posts %}
+                  {% if p.categories.size > 1 and p.categories[0] == cat_name and p.categories[1] == sec_name %}
+                    {% assign sec_count = sec_count | plus: 1 %}
+                  {% endif %}
+                {% endfor %}
+                <details class="archive-month">
+                  <summary class="archive-month-title">{{ sec_name }} <span class="archive-count">{{ sec_count }} 篇</span></summary>
+                  <ul class="archive-post-list">
+                    {% for p in cat_posts %}
+                      {% if p.categories.size > 1 and p.categories[0] == cat_name and p.categories[1] == sec_name %}
+                        <li>
+                          <a class="archive-post-link" href="{{ p.url | relative_url }}">{{ p.title }}</a>
+                        </li>
+                      {% endif %}
+                    {% endfor %}
+                  </ul>
+                </details>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </details>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <div class="view-content view-date" style="display:none">
+      {% assign posts_by_year = site.posts | group_by_exp: "post", "post.date | date: '%Y'" %}
+      {% for year_group in posts_by_year %}
+        <details class="archive-year" {% if forloop.first %}open{% endif %}>
+          <summary class="archive-year-title">{{ year_group.name }}年 <span class="archive-count">{{ year_group.items.size }} 篇</span></summary>
+          <div class="archive-months">
+            {% assign posts_by_month = year_group.items | group_by_exp: "post", "post.date | date: '%m'" %}
+            {% for month_group in posts_by_month %}
+              <details class="archive-month" {% if forloop.first and forloop.parentloop.first %}open{% endif %}>
+                <summary class="archive-month-title">{{ month_group.items[0].date | date: "%m月" }} <span class="archive-count">{{ month_group.items.size }} 篇</span></summary>
+                <ul class="archive-post-list">
+                  {% for post in month_group.items %}
+                    <li>
+                      <span class="archive-post-date">{{ post.date | date: "%m-%d" }}</span>
+                      <a class="archive-post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </details>
+            {% endfor %}
+          </div>
+        </details>
+      {% endfor %}
+    </div>
+
+    <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | relative_url }}">via RSS</a></p>
+  {%- endif -%}
+</div>
+
+<script>
+(function() {
+  var btns = document.querySelectorAll('.view-toggle-btn');
+  var views = {
+    'cat': document.querySelector('.view-cat'),
+    'date': document.querySelector('.view-date')
+  };
+  btns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var view = this.getAttribute('data-view');
+      btns.forEach(function(b) { b.classList.remove('active'); });
+      this.classList.add('active');
+      for (var key in views) {
+        views[key].style.display = key === view ? 'block' : 'none';
+      }
+    });
+  });
+})();
+</script>

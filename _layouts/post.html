@@ -1,37 +1,193 @@
 ---
 layout: default
 ---
-<article class="post container">
-  <div class="post-meta">
-    {% if page.create_time %}
-    <span class="post-meta-span create_time">创建时间：{{ page.create_time | date: "%Y.%m.%d" }}</span>
-    {% endif %}
-    {% if page.update_time %}
-    <span class="post-meta-span update_time">更新时间：{{ page.update_time | date: "%Y.%m.%d" }}</span>
-    {% endif %}
-    {% if page.tags.size > 0 %}
-    <span class="post-meta-span tag">{{ page.tags | join: ', ' }}</span>
-    {% endif %}
+<article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">{{ page.title | escape }}</h1>
+    <div class="post-meta">
+      {%- if page.create_time -%}
+        <span class="post-meta-label">创建：</span><span>{{ page.create_time | date: "%Y.%m.%d %H:%M" | replace: " 00:00", "" }}</span>
+      {%- endif -%}
+      {%- if page.update_time -%}
+        <span class="post-meta-label">更新：</span><span>{{ page.update_time | date: "%Y.%m.%d %H:%M" | replace: " 00:00", "" }}</span>
+      {%- elsif page.create_time -%}
+        <span class="post-meta-label">更新：</span><span>{{ page.create_time | date: "%Y.%m.%d %H:%M" | replace: " 00:00", "" }}</span>
+      {%- endif -%}
+      {%- if page.date -%}
+        <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished" hidden>
+          {{ page.date | date: site.minima.date_format | default: "%Y-%m-%d" }}
+        </time>
+      {%- endif -%}
+      {%- if page.author -%}
+        <span class="post-meta-span" itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">{{ page.author }}</span></span>
+      {%- endif -%}
+    </div>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    {{ content }}
   </div>
 
-  <h1 class="post-title">{{ page.title }}</h1>
-  {{ content }}
+  {%- if site.disqus.shortname -%}
+    {%- include disqus_comments.html -%}
+  {%- endif -%}
+
+  <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
 </article>
 
-<div class="post-share">
-  <div class="container">
-    <a href="https://www.facebook.com/sharer/sharer.php?u={{ page.url | prepend: site.baseurl | prepend: site.url }}&display=popup" target="_blank" ><img src="/imgs/post_share/facebook.svg" ></a>
-    <a href="https://twitter.com/share?url={{ page.url | prepend: site.baseurl | prepend: site.url }}&text={{ page.title }}" target="_blank" ><img src="/imgs/post_share/twitter.svg" ></a>
-    <a href="https://connect.qq.com/widget/shareqq/index.html?url={{ page.url | prepend: site.baseurl | prepend: site.url }}&title={{ page.title }}" target="_blank" ><img src="/imgs/post_share/qq.svg" ></a>
-    <a href="http://service.weibo.com/share/share.php?url={{ page.url | prepend: site.baseurl | prepend: site.url }}&title={{ page.title }}" target="_blank" ><img src="/imgs/post_share/sinaweibo.svg" ></a>
-    <a href="/wechat_share.html?url={{ page.url | prepend: site.baseurl | prepend: site.url }}&title={{ page.title }}" target="_blank" ><img src="/imgs/post_share/wechat.svg" ></a>
-    <a href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url={{ page.url | prepend: site.baseurl | prepend: site.url }}&title={{ page.title }}&summary=&pics=" target="_blank"><img src="/imgs/post_share/qzone.svg" ></a>
+<!-- 文章目录侧边栏 -->
+<button class="toc-toggle-btn" id="toc-toggle-btn" title="目录" aria-label="切换目录">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="3" y1="6" x2="15" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="18" y2="18"/>
+  </svg>
+</button>
+<aside class="toc-sidebar" id="toc-sidebar">
+  <div class="toc-header">
+    <span class="toc-title">目录</span>
+    <button class="toc-close-btn" id="toc-close-btn" aria-label="关闭目录">&times;</button>
   </div>
-</div>
+  <nav class="toc-nav" id="toc-nav"></nav>
+</aside>
 
-{% if site.disqus.shortname %}
-<div class="comment container">
-  <div id="disqus_thread">
-  </div>
-</div>
-{% endif %}
+<script>
+(function() {
+  var content = document.querySelector('.post-content');
+  var tocNav = document.getElementById('toc-nav');
+  var tocSidebar = document.getElementById('toc-sidebar');
+  var tocToggle = document.getElementById('toc-toggle-btn');
+  var tocClose = document.getElementById('toc-close-btn');
+  if (!content || !tocNav) return;
+
+  var headings = content.querySelectorAll('h1, h2, h3, h4, h5, h6');
+  if (headings.length === 0) { tocToggle.style.display = 'none'; return; }
+
+  // 生成目录树
+  var html = '<ul class="toc-list">';
+  headings.forEach(function(h, i) {
+    if (!h.id) h.id = 'toc-h-' + i;
+    var level = h.tagName.toLowerCase();
+    var text = h.textContent.trim();
+    html += '<li class="toc-item toc-' + level + '"><a class="toc-link" href="#' + h.id + '">' + text + '</a></li>';
+  });
+  html += '</ul>';
+  tocNav.innerHTML = html;
+
+  // 切换目录
+  function toggleToc() { tocSidebar.classList.toggle('open'); }
+  tocToggle.addEventListener('click', toggleToc);
+  tocClose.addEventListener('click', function() { tocSidebar.classList.remove('open'); });
+
+  // ESC 键关闭目录（搜索弹窗打开时不响应，避免误关）
+  document.addEventListener('keydown', function(e) {
+    var searchOpen = document.getElementById('search-results') &&
+                     document.getElementById('search-results').classList.contains('open');
+    if (e.key === 'Escape' && !searchOpen && tocSidebar.classList.contains('open')) {
+      tocSidebar.classList.remove('open');
+    }
+  });
+
+  // 点击目录项平滑滚动并关闭（移动端）
+  tocNav.addEventListener('click', function(e) {
+    if (e.target.classList.contains('toc-link')) {
+      if (window.innerWidth <= 1200) tocSidebar.classList.remove('open');
+    }
+  });
+
+  // 滚动高亮当前章节
+  var links = tocNav.querySelectorAll('.toc-link');
+  var headingEls = Array.from(headings);
+  function onScroll() {
+    var scrollY = window.scrollY + 80;
+    var current = '';
+    headingEls.forEach(function(h) {
+      if (h.offsetTop <= scrollY) current = h.id;
+    });
+    links.forEach(function(a) {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+
+<!-- 代码块工具栏：复制 + 切换换行 -->
+<script>
+(function() {
+  var pres = document.querySelectorAll('.post-content pre');
+  if (!pres.length) return;
+
+  // SVG 图标
+  var iconCopy = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+  var iconCheck = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  var iconWrap = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M3 12h15a3 3 0 1 1 0 6h-4"/><polyline points="16 16 14 18 16 20"/><path d="M3 18h7"/></svg>';
+  var iconNoWrap = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M3 12h18"/><path d="M3 18h18"/></svg>';
+
+  pres.forEach(function(pre) {
+    if (getComputedStyle(pre).position === 'static') {
+      pre.style.position = 'relative';
+    }
+
+    var toolbar = document.createElement('div');
+    toolbar.className = 'code-toolbar';
+
+    // 提取语言类型并显示标签
+    // kramdown 将 language-xxx 类放在外层 <div> 上，需向上查找
+    var lang = '';
+    var wrapper = pre.closest('[class*="language-"]');
+    if (wrapper) {
+      var m = (wrapper.className || '').match(/language-([\w+#.-]+)/);
+      if (m) lang = m[1];
+    }
+    // 回退：检查 <code> 元素本身
+    if (!lang) {
+      var code = pre.querySelector('code');
+      if (code) {
+        var cm = (code.className || '').match(/language-([\w+#.-]+)/);
+        if (cm) lang = cm[1];
+      }
+    }
+    // 始终显示语言标签，无语言时显示 text
+    var langLabel = document.createElement('span');
+    langLabel.className = 'code-lang-label';
+    langLabel.textContent = lang || 'text';
+    toolbar.appendChild(langLabel);
+
+    // 复制按钮
+    var copyBtn = document.createElement('button');
+    copyBtn.className = 'code-toolbar-btn';
+    copyBtn.title = '复制代码';
+    copyBtn.setAttribute('aria-label', '复制代码');
+    copyBtn.innerHTML = iconCopy + '<span>复制</span>';
+    copyBtn.addEventListener('click', function() {
+      var codeEl = pre.querySelector('code');
+      var text = codeEl ? codeEl.textContent : pre.textContent;
+      navigator.clipboard.writeText(text).then(function() {
+        copyBtn.innerHTML = iconCheck + '<span>已复制</span>';
+        copyBtn.classList.add('copied');
+        setTimeout(function() {
+          copyBtn.innerHTML = iconCopy + '<span>复制</span>';
+          copyBtn.classList.remove('copied');
+        }, 1500);
+      });
+    });
+
+    // 换行切换按钮
+    var wrapBtn = document.createElement('button');
+    wrapBtn.className = 'code-toolbar-btn';
+    wrapBtn.title = '切换换行';
+    wrapBtn.setAttribute('aria-label', '切换换行');
+    wrapBtn.innerHTML = iconWrap + '<span>换行</span>';
+    wrapBtn.addEventListener('click', function() {
+      var isNowrap = pre.classList.toggle('nowrap');
+      wrapBtn.classList.toggle('active', isNowrap);
+      wrapBtn.innerHTML = (isNowrap ? iconNoWrap : iconWrap) + '<span>' + (isNowrap ? '不换行' : '换行') + '</span>';
+    });
+
+    toolbar.appendChild(wrapBtn);
+    toolbar.appendChild(copyBtn);
+    pre.appendChild(toolbar);
+  });
+})();
+</script>

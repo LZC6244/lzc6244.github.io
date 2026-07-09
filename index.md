@@ -1,16 +1,16 @@
 ---
-title:          Maida's Blog
-layout:         post
-author:         maida
-tags:
- - 主页
+# title:          看看你极限深蓝的 Blog
+layout:         home
 ---
 
 
-## 简介
-记录学习成长路上的点滴，有随笔、有长篇，偏技术向。
+# 简介
+别人写博客勤勤恳恳，我写博客全靠顿悟✨  
+一年产出全凭一时上头。
 
-## 关于我
-专注于 Python 爬虫，把编程融入生活。
 
-[scrapy_ddiy](https://github.com/LZC6244/scrapy_ddiy) ： scrapy 爬虫项目练习、自定义框架组件、 
+
+# DIY 工具
+- [toolbox-web 工具箱](https://toolbox-web-eta.vercel.app/)： 部署在 `vercel` 的在线工具箱
+
+---

@@ -1,0 +1,10 @@
+<header class="site-header">
+  <div class="wrapper header-wrapper">
+    <a class="site-title" rel="author" href="{{ "/" | relative_url }}">{{ site.title | escape }}</a>
+
+    <div class="search-container">
+      <input type="text" id="search-input" class="search-input" placeholder="搜索文章..." maxlength="100" data-search-url="{{ '/search.json' | relative_url }}" />
+      <span class="search-char-count" id="search-char-count">0/100</span>
+    </div>
+  </div>
+</header>

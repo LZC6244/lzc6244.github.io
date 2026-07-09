@@ -1,0 +1,80 @@
+---
+layout: null
+title: 文件查看器
+permalink: /file-viewer/
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>文件查看器</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fafbfc; color: #1a1a2e; }
+  .toolbar {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 20px; background: #fff; border-bottom: 1px solid #e8ecf0;
+  }
+  .toolbar h1 { font-size: 1rem; font-weight: 500; }
+  .toolbar a { font-size: 0.85rem; color: #3b82f6; text-decoration: none; }
+  .toolbar a:hover { text-decoration: underline; }
+  pre {
+    margin: 0; padding: 20px; overflow-x: auto;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.88rem; line-height: 1.6;
+    background: #f6f8fa;
+  }
+  .error { padding: 40px 20px; text-align: center; color: #888; }
+  @media (prefers-color-scheme: dark) {
+    body { background: #0f1117; color: #e2e4e9; }
+    .toolbar { background: #1a1d27; border-bottom-color: #2a2d38; }
+    .toolbar a { color: #60a5fa; }
+    pre { background: #161922; }
+  }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <h1 id="filename">加载中...</h1>
+  <a id="download-link" href="#" download>下载文件</a>
+</div>
+<pre><code id="content"></code></pre>
+
+<script>
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var file = params.get('file');
+  var filenameEl = document.getElementById('filename');
+  var contentEl = document.getElementById('content');
+  var downloadLink = document.getElementById('download-link');
+
+  if (!file) {
+    filenameEl.textContent = '缺少 file 参数';
+    contentEl.textContent = '请在 URL 中添加 ?file=/path/to/file';
+    return;
+  }
+
+  var name = decodeURIComponent(file.split('/').pop());
+  filenameEl.textContent = name;
+  downloadLink.href = file;
+
+  fetch(file)
+    .then(function(r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
+    })
+    .then(function(text) {
+      contentEl.textContent = text;
+      document.title = name + ' - 文件查看器';
+    })
+    .catch(function(e) {
+      filenameEl.textContent = '加载失败';
+      contentEl.textContent = '无法加载文件: ' + file + '\n' + e.message;
+      document.querySelector('pre').classList.add('error');
+    });
+})();
+</script>
+</body>
+</html>
