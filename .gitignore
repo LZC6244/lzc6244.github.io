@@ -133,3 +133,10 @@ _site
 .jekyll-cache
 .jekyll-metadata
 vendor
+
+# 不提交 Gemfile.lock，让 GitHub Pages 线上 Ruby 3.3.4 自行解析 github-pages 232
+# 本地 Ruby 4.0 只能解析到 223，提交会导致版本不一致
+Gemfile.lock
+
+# bundler 本地镜像配置
+.bundle/
