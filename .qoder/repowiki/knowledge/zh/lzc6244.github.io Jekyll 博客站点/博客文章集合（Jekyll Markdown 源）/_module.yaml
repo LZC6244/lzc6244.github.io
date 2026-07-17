@@ -1,0 +1,10 @@
+schema_version: 1
+module_path: posts
+title: 博客文章集合（Jekyll Markdown 源）
+scope:
+    - _posts/
+source_files: []
+depends_on: []
+related_to:
+    - path: site_pages
+    - path: theme_assets

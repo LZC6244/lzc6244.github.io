@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: static_assets
+title: 静态资源与站点图标
+scope:
+    - assets/
+    - favicons/
+    - files/
+source_files: []
+depends_on: []
+related_to:
+    - path: theme_assets

@@ -1,0 +1,13 @@
+schema_version: 1
+module_path: site_pages
+title: 站点静态页面与 Jekyll 数据源
+scope:
+    - pages/
+    - search.json
+    - file-viewer.html
+    - wechat_share.html
+source_files: []
+depends_on: []
+related_to:
+    - path: posts
+    - path: theme_assets

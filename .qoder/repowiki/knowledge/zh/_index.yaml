@@ -3,41 +3,138 @@ schema_version: 1
 locale: zh-CN
 branch: master
 nodes_managed: true
-exported_at: "2026-07-08T01:49:48Z"
+exported_at: "2026-07-17T14:31:54Z"
 modules:
     "":
-        dir_name: Jekyll 个人博客站点（Minima 主题定制）
-        title: Jekyll 个人博客站点（Minima 主题定制）
+        dir_name: lzc6244.github.io Jekyll 博客站点
+        title: lzc6244.github.io Jekyll 博客站点
         scope:
-            - .gitignore
-            - 404.html
-            - _config.yml
-            - _includes/
-            - _layouts/
-            - _plugins/
-            - _posts/
-            - Gemfile
-            - Gemfile.lock
             - README.md
-            - assets/
-            - favicons/
-            - files/
-            - google885a265086f3db62.html
-            - ie.html
+            - .gitignore
+            - _config.yml
+            - Gemfile
             - index.md
+            - 404.html
+            - ie.html
             - jsconfig.json
-            - pages/
-            - search.json
-            - wechat_share.html
             - LICENSE
+            - google885a265086f3db62.html
+            - screenshot_after_click.png
+            - screenshot_after_overlay_close.png
+            - screenshot_after_ubuntu.png
+            - screenshot_all_categories_expanded.png
+            - screenshot_babel_ast_expanded.png
+            - screenshot_blockquote_info.png
             - screenshot_blogpost.png
+            - screenshot_both_expanded_file.png
+            - screenshot_categories_bottom.png
+            - screenshot_categories_lower.png
+            - screenshot_categories_middle.png
+            - screenshot_categories_view.png
+            - screenshot_category_section.png
+            - screenshot_crawler_category.png
+            - screenshot_crawler_expanded.png
+            - screenshot_database_category.png
+            - screenshot_database_collapsed_ubuntu_expanded.png
+            - screenshot_database_expanded.png
+            - screenshot_database_expanded_file.png
+            - screenshot_database_focused.png
+            - screenshot_date_2026.png
+            - screenshot_date_section.png
+            - screenshot_docker_compose_page.png
+            - screenshot_full_page.png
             - screenshot_homepage.png
+            - screenshot_homepage_new.png
+            - screenshot_homepage_search.png
+            - screenshot_lower_categories.png
+            - screenshot_markdown_kbd_focused.png
+            - screenshot_markdown_kbd_section.png
+            - screenshot_markdown_kbd_viewport.png
+            - screenshot_markdown_tips_full.png
+            - screenshot_mid_page.png
+            - screenshot_page_bottom.png
+            - screenshot_page_scrolled.png
+            - screenshot_page_top.png
+            - screenshot_pyenv_meta_3x.png
+            - screenshot_pyenv_meta_overlay.png
+            - screenshot_pyenv_meta_zoom.png
+            - screenshot_pyenv_meta_zoom2.png
+            - screenshot_pyenv_post_meta.png
+            - screenshot_pyenv_postmeta_2x.png
+            - screenshot_pyenv_postmeta_check.png
+            - screenshot_pyenv_postmeta_full.png
+            - screenshot_pyenv_timestamp.png
+            - screenshot_python_category.png
+            - screenshot_scrolled_bottom.png
+            - screenshot_search_overlay.png
+            - screenshot_search_overlay_docker.png
             - screenshot_toc_closed.png
             - screenshot_toc_open.png
+            - screenshot_tools_category.png
+            - screenshot_tools_ubuntu_crawler.png
+            - screenshot_ubuntu_expanded.png
+            - screenshot_ubuntu_expanded_file.png
             - search_test_milvus.png
             - search_test_milvus_results.png
             - search_test_milvus_viewport.png
+            - test_final_state.png
+            - test_scrolled_down.png
+        source_files: []
+        children:
+            - posts
+            - site_pages
+            - static_assets
+            - theme_assets
+        depends_on: []
+        related_to: []
+    posts:
+        dir_name: 博客文章集合（Jekyll Markdown 源）
+        title: 博客文章集合（Jekyll Markdown 源）
+        scope:
+            - _posts/
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: site_pages
+            - path: theme_assets
+    site_pages:
+        dir_name: 站点静态页面与 Jekyll 数据源
+        title: 站点静态页面与 Jekyll 数据源
+        scope:
+            - pages/
+            - search.json
+            - file-viewer.html
+            - wechat_share.html
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: posts
+            - path: theme_assets
+    static_assets:
+        dir_name: 静态资源与站点图标
+        title: 静态资源与站点图标
+        scope:
+            - assets/
+            - favicons/
+            - files/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: theme_assets
+    theme_assets:
+        dir_name: Jekyll 主题模板与构建插件
+        title: Jekyll 主题模板与构建插件
+        scope:
+            - _layouts/
+            - _includes/
+            - _plugins/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: posts
+            - path: site_pages
+            - path: static_assets
