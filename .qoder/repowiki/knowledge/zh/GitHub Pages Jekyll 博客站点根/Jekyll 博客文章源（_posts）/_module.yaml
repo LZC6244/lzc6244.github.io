@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: posts
+title: Jekyll 博客文章源（_posts）
+scope:
+    - _posts/
+source_files: []
+depends_on: []
+related_to: []

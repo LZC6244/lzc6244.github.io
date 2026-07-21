@@ -851,6 +851,23 @@ body.toc-open .post {
   display: inline-block;
 }
 
+.post-meta-categories {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.post-category {
+  display: inline-block;
+  padding: 1px 10px;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+  background: var(--color-bg-subtle, rgba(128, 128, 128, 0.1));
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 999px;
+}
+
 .post-content {
   font-size: clamp(1.05rem, 2.2vw, 1.15rem) !important;
   max-width: 100%;

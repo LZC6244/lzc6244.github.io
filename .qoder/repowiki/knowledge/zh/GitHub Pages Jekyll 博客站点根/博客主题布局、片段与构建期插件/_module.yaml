@@ -1,6 +1,6 @@
 schema_version: 1
 module_path: theme_assets
-title: Jekyll 主题模板与构建插件
+title: 博客主题布局、片段与构建期插件
 scope:
     - _layouts/
     - _includes/
@@ -8,6 +8,5 @@ scope:
 source_files: []
 depends_on: []
 related_to:
-    - path: posts
     - path: site_pages
     - path: static_assets

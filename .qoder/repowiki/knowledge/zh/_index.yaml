@@ -3,11 +3,11 @@ schema_version: 1
 locale: zh-CN
 branch: master
 nodes_managed: true
-exported_at: "2026-07-19T05:57:36Z"
+exported_at: "2026-07-22T03:29:11Z"
 modules:
     "":
-        dir_name: lzc6244.github.io Jekyll 博客站点
-        title: lzc6244.github.io Jekyll 博客站点
+        dir_name: GitHub Pages Jekyll 博客站点根
+        title: GitHub Pages Jekyll 博客站点根
         scope:
             - README.md
             - .gitignore
@@ -88,16 +88,14 @@ modules:
         depends_on: []
         related_to: []
     posts:
-        dir_name: 博客文章集合（Jekyll Markdown 源）
-        title: 博客文章集合（Jekyll Markdown 源）
+        dir_name: Jekyll 博客文章源（_posts）
+        title: Jekyll 博客文章源（_posts）
         scope:
             - _posts/
         source_files: []
         children: []
         depends_on: []
-        related_to:
-            - path: site_pages
-            - path: theme_assets
+        related_to: []
     site_pages:
         dir_name: 站点静态页面与 Jekyll 数据源
         title: 站点静态页面与 Jekyll 数据源
@@ -110,7 +108,6 @@ modules:
         children: []
         depends_on: []
         related_to:
-            - path: posts
             - path: theme_assets
     static_assets:
         dir_name: 静态资源与站点图标
@@ -125,8 +122,8 @@ modules:
         related_to:
             - path: theme_assets
     theme_assets:
-        dir_name: Jekyll 主题模板与构建插件
-        title: Jekyll 主题模板与构建插件
+        dir_name: 博客主题布局、片段与构建期插件
+        title: 博客主题布局、片段与构建期插件
         scope:
             - _layouts/
             - _includes/
@@ -135,6 +132,5 @@ modules:
         children: []
         depends_on: []
         related_to:
-            - path: posts
             - path: site_pages
             - path: static_assets
