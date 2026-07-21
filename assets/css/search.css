@@ -26,12 +26,18 @@
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.08);
 
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
 
   --transition-fast: 0.15s ease;
   --transition-normal: 0.25s ease;
+
+  /* 布局宽度 */
+  --content-max-width: 1200px;
+  --content-wide-width: 1400px;
+  --content-padding: 24px;
 }
 
 /* ----- Dark Mode Tokens ----- */
@@ -92,12 +98,21 @@ a:hover {
 }
 
 .wrapper {
-  max-width: 90vw !important;
+  max-width: var(--content-max-width) !important;
+  padding-left: var(--content-padding) !important;
+  padding-right: var(--content-padding) !important;
 }
 
-@media screen and (min-width: 1400px) {
+@media screen and (min-width: 1600px) {
   .wrapper {
-    max-width: 1100px !important;
+    max-width: var(--content-wide-width) !important;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .wrapper {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
   }
 }
 
@@ -112,7 +127,7 @@ code {
   border: 1px solid #dde2e8;
   border-radius: 4px;
   padding: 2px 6px;
-  font-size: 0.88em;
+  font-size: 0.95em;
   color: var(--color-text);
 }
 
@@ -120,19 +135,30 @@ pre {
   background: var(--color-bg-subtle);
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-md);
-  padding: 42px 20px 18px;
+  padding: 38px 12px 12px;
   overflow-x: auto;
   position: relative;
+  line-height: 1.55;
 }
 
 pre > code {
   background: none;
   border: none;
   padding: 0;
-  font-size: 0.88em;
+  font-size: 1em;
+  line-height: 1.55;
 }
 
-/* 代码块默认自动换行，加 .nowrap 时水平滚动 */
+/* 覆盖 minima 主题的淡紫色背景(#eef)，统一为设计系统灰色 */
+.highlight {
+  background: transparent !important;
+}
+
+.highlighter-rouge .highlight {
+  background: var(--color-bg-subtle) !important;
+}
+
+/* 代码块默认自动换行，加 .nowrap 时水平滚动（可通过工具栏按钮切换） */
 pre > code {
   white-space: pre-wrap;
   word-break: break-all;
@@ -143,16 +169,59 @@ pre.nowrap > code {
   word-break: normal;
 }
 
+/* ----- 代码块行号 -----
+ * 每行真实内容显示行号，软换行（自动折行）不显示，
+ * 以此区分真实换行与自动换行；伪元素不影响复制内容
+ * 行号绝对定位在 padding 区域，续行自动与代码内容对齐
+ * 行末 \n 在 .code-line 内部，随行高自然收起，不产生额外间距 */
+pre > code {
+  counter-reset: code-line;
+}
+
+.code-line {
+  display: block;
+  position: relative;
+  padding-left: 2.8em;
+  min-height: 1.55em;
+}
+
+.code-line::before {
+  content: counter(code-line);
+  counter-increment: code-line;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1.8em;
+  padding-right: 5px;
+  border-right: 1px solid var(--color-border);
+  text-align: right;
+  color: var(--color-text-muted);
+  opacity: 0.45;
+  font-size: 0.75em;
+  line-height: 2.07;  /* 0.75 * 2.07 ≈ 1.55，与代码行高视觉对齐 */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* 隐藏行号模式 */
+pre.no-line-numbers .code-line {
+  padding-left: 0;
+}
+
+pre.no-line-numbers .code-line::before {
+  display: none;
+}
+
 /* ----- 代码块工具栏 ----- */
 .code-toolbar {
   position: absolute;
-  top: 8px;
-  left: 10px;
-  right: 10px;
+  top: 6px;
+  left: 8px;
+  right: 8px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 6px;
+  gap: 5px;
   z-index: 2;
 }
 
@@ -364,16 +433,17 @@ tr:nth-child(even) td {
   z-index: 50;
   background: var(--color-bg-elevated);
   border-bottom: 1px solid var(--color-border);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
 .header-wrapper {
   display: flex !important;
   align-items: center !important;
-  gap: 20px;
-  padding-top: 14px !important;
-  padding-bottom: 14px !important;
+  gap: 24px;
+  padding-top: 16px !important;
+  padding-bottom: 16px !important;
 }
 
 .header-wrapper .site-title {
@@ -381,9 +451,10 @@ tr:nth-child(even) td {
   flex-shrink: 0;
   line-height: normal !important;
   font-weight: 700 !important;
-  font-size: 17px !important;
+  font-size: 18px !important;
   color: var(--color-text) !important;
   letter-spacing: -0.3px;
+  transition: color var(--transition-fast);
 }
 
 .header-wrapper .site-title:hover {
@@ -730,12 +801,30 @@ tr:nth-child(even) td {
    文章页排版
    ============================================================ */
 
+/* 文章容器 - 为目录侧边栏预留空间 */
+.post {
+  transition: margin-right 0.3s ease;
+}
+
+/* 当目录打开时，文章内容向左收缩 */
+body.toc-open .post {
+  margin-right: 280px;
+}
+
+@media screen and (max-width: 1200px) {
+  body.toc-open .post {
+    margin-right: 0;
+  }
+}
+
 .post-header {
-  margin-bottom: 2.5em;
+  margin-bottom: 3em;
+  padding-bottom: 1.5em;
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .post-title {
-  font-size: clamp(1.6rem, 4vw, 2.5rem) !important;
+  font-size: clamp(1.8rem, 4.5vw, 2.8rem) !important;
   font-weight: 800 !important;
   color: var(--color-text) !important;
   letter-spacing: -0.5px;
@@ -743,13 +832,13 @@ tr:nth-child(even) td {
 }
 
 .post-meta {
-  margin-top: 12px;
-  font-size: 0.9rem;
+  margin-top: 14px;
+  font-size: 0.95rem;
   color: var(--color-text-muted);
   display: grid;
   grid-template-columns: auto 1fr;
-  column-gap: 8px;
-  row-gap: 4px;
+  column-gap: 10px;
+  row-gap: 5px;
   align-items: baseline;
   font-variant-numeric: tabular-nums;
 }
@@ -763,8 +852,8 @@ tr:nth-child(even) td {
 }
 
 .post-content {
-  font-size: clamp(1.05rem, 2.2vw, 1.2rem) !important;
-  max-width: 48em;
+  font-size: clamp(1.05rem, 2.2vw, 1.15rem) !important;
+  max-width: 100%;
   color: var(--color-text);
   line-height: 1.85;
 }
@@ -782,34 +871,34 @@ tr:nth-child(even) td {
 }
 
 .post-content h1 {
-  font-size: clamp(1.6rem, 4vw, 2.2rem) !important;
+  font-size: clamp(1.7rem, 4vw, 2.3rem) !important;
   margin-top: 2.5em !important;
   letter-spacing: -0.4px;
 }
 
 .post-content h2 {
-  font-size: clamp(1.4rem, 3.5vw, 1.85rem) !important;
+  font-size: clamp(1.5rem, 3.5vw, 1.95rem) !important;
   margin-top: 2.2em !important;
   letter-spacing: -0.3px;
 }
 
 .post-content h3 {
-  font-size: clamp(1.2rem, 2.8vw, 1.55rem) !important;
+  font-size: clamp(1.3rem, 2.8vw, 1.65rem) !important;
   margin-top: 1.8em !important;
 }
 
 .post-content h4 {
-  font-size: clamp(1.1rem, 2.4vw, 1.3rem) !important;
+  font-size: clamp(1.15rem, 2.4vw, 1.4rem) !important;
   margin-top: 1.5em !important;
 }
 
 .post-content h5 {
-  font-size: clamp(1rem, 2.2vw, 1.15rem) !important;
+  font-size: clamp(1.05rem, 2.2vw, 1.2rem) !important;
   margin-top: 1.3em !important;
 }
 
 .post-content h6 {
-  font-size: clamp(0.95rem, 2vw, 1.05rem) !important;
+  font-size: clamp(1rem, 2vw, 1.1rem) !important;
   margin-top: 1.2em !important;
   color: var(--color-text-secondary) !important;
 }
@@ -844,6 +933,11 @@ tr:nth-child(even) td {
   text-decoration-color: var(--color-accent);
 }
 
+/* 文章内代码块间距 */
+.post-content pre {
+  margin: 1.2em 0;
+}
+
 /* 文章内可折叠代码块 */
 .post-content details[open] > summary {
   margin-bottom: 0.6em;
@@ -859,37 +953,60 @@ tr:nth-child(even) td {
   max-width: 100%;
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border-subtle);
+  box-shadow: var(--shadow-sm);
+}
+
+/* 文章内列表 */
+.post-content ul,
+.post-content ol {
+  margin-left: 1.5em;
+}
+
+.post-content li {
+  margin-bottom: 0.3em;
+}
+
+/* 文章内段落 */
+.post-content p {
+  margin-bottom: 1.2em;
 }
 
 /* ============================================================
    首页
    ============================================================ */
 
+.home {
+  max-width: 100%;
+}
+
 .home h1 {
   font-weight: 800;
   color: var(--color-text);
   letter-spacing: -0.3px;
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
 }
 
 .home p {
   color: var(--color-text-secondary);
   line-height: 1.8;
+  font-size: 1.05rem;
 }
 
 /* 简介区域装饰线 */
 .home > p:first-of-type {
   border-left: 3px solid var(--color-accent);
-  padding-left: 16px;
-  margin-bottom: 28px;
+  padding-left: 18px;
+  margin-bottom: 32px;
+  font-size: 1.1rem;
 }
 
 .home hr {
-  margin: 40px 0;
+  margin: 48px 0;
 }
 
 /* RSS 订阅链接 */
 .rss-subscribe {
-  margin-top: 32px;
+  margin-top: 40px;
   font-size: 0.9rem;
   color: var(--color-text-muted);
 }
@@ -898,15 +1015,16 @@ tr:nth-child(even) td {
 .view-toggle {
   display: flex;
   gap: 0;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   overflow: hidden;
   width: fit-content;
+  box-shadow: var(--shadow-sm);
 }
 
 .view-toggle-btn {
-  padding: 7px 20px;
+  padding: 8px 24px;
   font-size: 14px;
   cursor: pointer;
   user-select: none;
@@ -928,22 +1046,27 @@ tr:nth-child(even) td {
 
 /* ----- 归档列表 ----- */
 .archive-year {
-  margin-bottom: 14px;
+  margin-bottom: 16px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   overflow: hidden;
-  transition: border-color var(--transition-normal);
+  transition: all var(--transition-normal);
   background: var(--color-bg-elevated);
+}
+
+.archive-year:hover {
+  border-color: var(--color-text-muted);
+  box-shadow: var(--shadow-sm);
 }
 
 .archive-year[open] {
   border-color: var(--color-accent);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
 }
 
 .archive-year-title {
-  padding: 12px 18px;
-  font-size: 1.15rem;
+  padding: 14px 20px;
+  font-size: 1.2rem;
   font-weight: 600;
   color: var(--color-text);
   cursor: pointer;
@@ -957,20 +1080,20 @@ tr:nth-child(even) td {
 }
 
 .archive-year-title::-webkit-details-marker {
-  margin-right: 8px;
+  margin-right: 10px;
 }
 
 .archive-months {
-  padding: 6px 0 10px 14px;
+  padding: 8px 0 12px 16px;
 }
 
 .archive-month {
-  margin: 3px 0;
+  margin: 4px 0;
 }
 
 .archive-month-title {
-  padding: 7px 14px;
-  font-size: 1rem;
+  padding: 8px 16px;
+  font-size: 1.05rem;
   font-weight: 500;
   color: var(--color-text-secondary);
   cursor: pointer;
@@ -984,23 +1107,23 @@ tr:nth-child(even) td {
 }
 
 .archive-count {
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   font-weight: 400;
   color: var(--color-text-muted);
-  margin-left: 8px;
+  margin-left: 10px;
 }
 
 .archive-post-list {
   list-style: none;
-  margin: 4px 0 4px 20px;
+  margin: 6px 0 6px 24px;
   padding: 0;
 }
 
 .archive-post-list li {
-  padding: 5px 10px;
+  padding: 6px 12px;
   display: flex;
   align-items: baseline;
-  gap: 12px;
+  gap: 14px;
   border-radius: var(--radius-sm);
   transition: background var(--transition-fast);
 }
@@ -1011,7 +1134,7 @@ tr:nth-child(even) td {
 
 .archive-post-date {
   flex-shrink: 0;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   color: var(--color-text-muted);
   font-family: var(--font-mono);
 }
@@ -1019,11 +1142,12 @@ tr:nth-child(even) td {
 .archive-post-link {
   color: var(--color-accent-text);
   text-decoration: none;
-  font-size: 1rem;
+  font-size: 1.05rem;
   line-height: 1.5;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  transition: color var(--transition-fast);
 }
 
 .archive-post-link:hover {
@@ -1037,8 +1161,9 @@ tr:nth-child(even) td {
 
 .site-footer {
   border-top: 1px solid var(--color-border);
-  padding: 24px 0;
-  margin-top: 60px;
+  padding: 32px 0;
+  margin-top: 80px;
+  background: var(--color-bg-subtle);
 }
 
 .footer-inner {
@@ -1046,20 +1171,20 @@ tr:nth-child(even) td {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 16px;
 }
 
 .footer-contact {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 24px;
 }
 
 .footer-link {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.9rem;
+  gap: 8px;
+  font-size: 0.95rem;
   color: var(--color-text-muted);
   text-decoration: none;
   transition: color var(--transition-fast);
@@ -1078,14 +1203,14 @@ tr:nth-child(even) td {
   margin: 0;
   padding: 0;
   display: flex;
-  gap: 18px;
+  gap: 20px;
 }
 
 .footer-social a {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.9rem;
+  gap: 8px;
+  font-size: 0.95rem;
   color: var(--color-text-muted);
   text-decoration: none;
   transition: color var(--transition-fast);
@@ -1301,5 +1426,166 @@ tr:nth-child(even) td {
 
   .toc-sidebar {
     width: 260px;
+  }
+}
+
+/* ============================================================
+   页面内容区域
+   ============================================================ */
+
+.page-content {
+  padding: 40px 0 !important;
+}
+
+@media screen and (max-width: 768px) {
+  .page-content {
+    padding: 24px 0 !important;
+  }
+}
+
+/* ============================================================
+   响应式优化
+   ============================================================ */
+
+/* 平板适配 */
+@media screen and (max-width: 1024px) {
+  .header-wrapper {
+    gap: 16px;
+  }
+
+  .search-container {
+    max-width: 250px;
+  }
+
+  .archive-year-title {
+    font-size: 1.1rem;
+    padding: 12px 16px;
+  }
+
+  .archive-month-title {
+    font-size: 1rem;
+  }
+
+  .archive-post-link {
+    font-size: 1rem;
+  }
+}
+
+/* 手机适配 */
+@media screen and (max-width: 768px) {
+  .header-wrapper {
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+  }
+
+  .header-wrapper .site-title {
+    font-size: 16px !important;
+  }
+
+  .home h1 {
+    font-size: 1.6rem;
+  }
+
+  .home > p:first-of-type {
+    font-size: 1rem;
+    padding-left: 14px;
+  }
+
+  .view-toggle {
+    margin-bottom: 20px;
+  }
+
+  .view-toggle-btn {
+    padding: 7px 16px;
+    font-size: 13px;
+  }
+
+  .archive-year {
+    margin-bottom: 12px;
+  }
+
+  .archive-year-title {
+    font-size: 1.05rem;
+    padding: 10px 14px;
+  }
+
+  .archive-months {
+    padding: 6px 0 10px 12px;
+  }
+
+  .archive-month-title {
+    font-size: 0.95rem;
+    padding: 6px 12px;
+  }
+
+  .archive-post-list {
+    margin-left: 16px;
+  }
+
+  .archive-post-list li {
+    padding: 5px 8px;
+    gap: 10px;
+  }
+
+  .archive-post-link {
+    font-size: 0.95rem;
+  }
+
+  .post-header {
+    margin-bottom: 2em;
+    padding-bottom: 1em;
+  }
+
+  .post-title {
+    font-size: 1.6rem !important;
+  }
+
+  .post-content {
+    font-size: 1rem !important;
+  }
+
+  .post-content h1 {
+    font-size: 1.5rem !important;
+  }
+
+  .post-content h2 {
+    font-size: 1.35rem !important;
+  }
+
+  .post-content h3 {
+    font-size: 1.2rem !important;
+  }
+
+  .post-content h4 {
+    font-size: 1.1rem !important;
+  }
+
+  .site-footer {
+    padding: 24px 0;
+    margin-top: 48px;
+  }
+
+  .footer-inner {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .footer-contact {
+    gap: 16px;
+  }
+}
+
+/* 超小屏适配 */
+@media screen and (max-width: 480px) {
+  .archive-year-title {
+    font-size: 1rem;
+  }
+
+  .archive-post-link {
+    font-size: 0.9rem;
+  }
+
+  .post-title {
+    font-size: 1.4rem !important;
   }
 }

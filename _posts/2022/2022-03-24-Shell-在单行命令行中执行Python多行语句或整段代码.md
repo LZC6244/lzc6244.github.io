@@ -30,7 +30,7 @@ categories:     [Python,Shell]
 需要考虑的是，由于 python 代码可能会存在换行啊单双引号等情况，我们怎么把它们优美地处理下。
 
 经查阅，美化如下：
-```shell
+```bash
 python << EOF
 
 for i in rang(5):

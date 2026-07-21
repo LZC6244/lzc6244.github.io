@@ -39,7 +39,7 @@ categories:     [Other]
 
 1. 生成 https 证书
 
-   ```Shell
+   ```bash
    # 生成私钥
    openssl genrsa -out server.key 2048
 

@@ -119,7 +119,7 @@ docker compose 中 xinference 服务的启动脚本，配置指定模型随 xinf
 
 样例如下
 
-```Bash
+```bash
 #!/bin/bash
 
 set -e -x

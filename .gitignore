@@ -138,5 +138,9 @@ vendor
 # 本地 Ruby 4.0 只能解析到 223，提交会导致版本不一致
 Gemfile.lock
 
+# 站点截图文件（误提交，不纳入版本控制）
+screenshot_*.png
+test_*.png
+
 # bundler 本地镜像配置
 .bundle/

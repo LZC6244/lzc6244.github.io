@@ -21,7 +21,7 @@ categories:     [Docker]
 
 在 vscode settings.json 文件中添加以下内容，指定当前项目使用 python 环境
 
-```Bash
+```bash
 # 样例 1
 "python.envFile": "${workspaceFolder}/.venv",
 

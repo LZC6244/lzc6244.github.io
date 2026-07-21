@@ -44,8 +44,9 @@ Jekyll::Hooks.register :posts, :pre_render do |post|
 
   # ── 围栏代码块 Liquid 转义 ──
   # 用 {% raw %} 包裹剩余的 ``` 代码块（. 在 m 模式下匹配换行符）
+  # 不加额外 \n，避免 Liquid 移除标签后产生多余空行
   post.content = post.content.gsub(/(```.+?```)/m) do
-    "{% raw %}\n#{$1}\n{% endraw %}"
+    "{% raw %}#{$1}{% endraw %}"
   end
 
   # ── 行内代码 Liquid 转义 ──

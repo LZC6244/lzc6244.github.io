@@ -25,7 +25,7 @@ categories:     [Docker]
 
 # 换源命令
 
-```Bash
+```bash
 # 终端中临时换源，换源替换【hub.uuuadc.top】这部分即可
 docker pull hub.uuuadc.top/library/node:20-slim
 

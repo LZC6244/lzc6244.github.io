@@ -98,7 +98,7 @@ categories:     [Docker]
 
 1. **创建脚本文件**
 
-   ```Bash
+   ```bash
    # 创建目录
    mkdir -p /etc/iptables-whitelist
 
@@ -113,7 +113,7 @@ categories:     [Docker]
 
 2. **创建配置文件**
 
-   ```Bash
+   ```bash
    # 复制上面的配置内容到文件
    cat > /etc/iptables-whitelist/config.yaml << 'EOF'
    # 粘贴上面 "iptables-whitelist.yaml" 章节的完整配置内容
@@ -122,20 +122,20 @@ categories:     [Docker]
 
 3. **编辑配置文件**
 
-   ```Bash
+   ```bash
    # 根据实际需求修改配置
    vim /etc/iptables-whitelist/config.yaml
    ```
 
 4. **运行脚本**
 
-   ```Bash
+   ```bash
    /usr/local/bin/iptables-whitelist.sh
    ```
 
 5. **验证运行状态**
 
-   ```Bash
+   ```bash
    # 进入容器
    docker compose exec -it <container_name> bash
 
@@ -179,7 +179,7 @@ ENTRYPOINT ["/app/start.sh"]
 
 iptables-whitelist.sh 是后台运行的守护进程，应通过启动脚本调用：
 
-```Bash
+```bash
 #!/bin/bash
 set -e
 
@@ -342,7 +342,7 @@ log_backup_count: 5
 
 **传统方式**：
 
-```Bash
+```bash
 # 每个IP一条规则
 iptables -A OUTPUT -d 192.168.1.100 -j ACCEPT
 iptables -A OUTPUT -d 10.0.1.50 -j ACCEPT
@@ -351,7 +351,7 @@ iptables -A OUTPUT -d 10.0.1.50 -j ACCEPT
 
 **本方案**：
 
-```Bash
+```bash
 # 1 条规则 + ipset 哈希表
 iptables -A OUTPUT -m set --match-set whitelist_dns dst -j ACCEPT
 ```
@@ -387,7 +387,7 @@ iptables -A OUTPUT -m set --match-set whitelist_dns dst -j ACCEPT
 
 **设计思想**：使用独立子进程运行域名解析任务，与主进程解耦。
 
-```Bash
+```bash
 (
   set +e                    # 遇到错误不退出
   trap '' HUP TERM INT      # 忽略信号
@@ -412,7 +412,7 @@ disown                      # 从 shell 分离
 
 **设计思想**：每次解析任务随机选择一个 DNS 服务器，所有域名共用该 DNS。
 
-```Bash
+```bash
 # 每次任务随机选择一个 DNS
 local dns_server=$(get_random_dns)
 
@@ -434,7 +434,7 @@ done
 
 **设计思想**：使用 conntrack 模块保护已建立的连接。
 
-```Bash
+```bash
 iptables -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 ```
 
@@ -450,7 +450,7 @@ iptables -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
 **设计思想**：使用 `cp + truncate` 替代 `mv` 进行日志轮转。
 
-```Bash
+```bash
 # ❌ 错误方式：破坏文件描述符
 mv "$LOG_FILE" "${LOG_FILE}.1"
 
@@ -578,7 +578,7 @@ domains:
 
 **对比环境变量**
 
-```Bash
+```bash
 ZSKJ_WHITE_LIST_DOMAIN=api.example.com,api-dev.example.com
 ```
 
@@ -596,7 +596,7 @@ ZSKJ_WHITE_LIST_DOMAIN=api.example.com,api-dev.example.com
 
 **守护进程容错**
 
-```Bash
+```bash
 # 单次 DNS 失败跳过该域名，继续下一个
 if ! raw_ips=$(timeout 5 dig ...); then
   log_to_file "⚠️  $domain: dig 超时"
@@ -606,7 +606,7 @@ fi
 
 **连接保护**
 
-```Bash
+```bash
 # 已建立的连接不受 IP 变化影响
 iptables -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 ```
@@ -633,13 +633,13 @@ iptables -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
 **默认拒绝策略**
 
-```Bash
+```bash
 iptables -P OUTPUT DROP
 ```
 
 **配置验证**
 
-```Bash
+```bash
 # UPDATE_INTERVAL 最小值检查
 if [ "$UPDATE_INTERVAL" -lt 30 ]; then
   UPDATE_INTERVAL=300
@@ -648,7 +648,7 @@ fi
 
 **超时保护**
 
-```Bash
+```bash
 # DNS 查询超时 5 秒
 timeout 5 dig +short "@$dns_server" "$domain"
 ```
@@ -751,7 +751,7 @@ services:
 
 ## 实际运行效果（需要在容器内执行）
 
-```Bash
+```bash
 # 进入容器
 docker compose exec -it <container_name> bash
 
@@ -781,7 +781,7 @@ $ ls -lh /var/log/iptables-whitelist/
 
 **A**: 重启容器
 
-```Bash
+```bash
 # 重启容器
 docker compose restart
 ```
@@ -790,7 +790,7 @@ docker compose restart
 
 **A**: 进入容器后使用 ipset 命令
 
-```Bash
+```bash
 # 先进入容器
 docker compose exec -it <container_name> bash
 
@@ -806,7 +806,7 @@ ipset list whitelist_static
 
 **A**: 排查步骤（需要在容器内执行）
 
-```Bash
+```bash
 # 1. 进入容器
 docker compose exec -it <container_name> bash
 

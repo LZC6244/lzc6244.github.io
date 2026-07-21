@@ -74,9 +74,15 @@ layout: default
   tocNav.innerHTML = html;
 
   // 切换目录
-  function toggleToc() { tocSidebar.classList.toggle('open'); }
+  function toggleToc() {
+    tocSidebar.classList.toggle('open');
+    document.body.classList.toggle('toc-open', tocSidebar.classList.contains('open'));
+  }
   tocToggle.addEventListener('click', toggleToc);
-  tocClose.addEventListener('click', function() { tocSidebar.classList.remove('open'); });
+  tocClose.addEventListener('click', function() {
+    tocSidebar.classList.remove('open');
+    document.body.classList.remove('toc-open');
+  });
 
   // ESC 键关闭目录（搜索弹窗打开时不响应，避免误关）
   document.addEventListener('keydown', function(e) {
@@ -84,13 +90,17 @@ layout: default
                      document.getElementById('search-results').classList.contains('open');
     if (e.key === 'Escape' && !searchOpen && tocSidebar.classList.contains('open')) {
       tocSidebar.classList.remove('open');
+      document.body.classList.remove('toc-open');
     }
   });
 
   // 点击目录项平滑滚动并关闭（移动端）
   tocNav.addEventListener('click', function(e) {
     if (e.target.classList.contains('toc-link')) {
-      if (window.innerWidth <= 1200) tocSidebar.classList.remove('open');
+      if (window.innerWidth <= 1200) {
+        tocSidebar.classList.remove('open');
+        document.body.classList.remove('toc-open');
+      }
     }
   });
 
@@ -123,10 +133,64 @@ layout: default
   var iconCheck = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
   var iconWrap = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M3 12h15a3 3 0 1 1 0 6h-4"/><polyline points="16 16 14 18 16 20"/><path d="M3 18h7"/></svg>';
   var iconNoWrap = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M3 12h18"/><path d="M3 18h18"/></svg>';
+  var iconLineNum = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="4" y2="6"/><line x1="4" y1="12" x2="4" y2="12"/><line x1="4" y1="18" x2="4" y2="18"/><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/></svg>';
+  var iconNoLineNum = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
 
   pres.forEach(function(pre) {
     if (getComputedStyle(pre).position === 'static') {
       pre.style.position = 'relative';
+    }
+
+    // 将代码内容按真实换行拆分为 .code-line 元素（供 CSS 行号计数）
+    // 深度遍历 DOM，按 \n 拆行并为每行重建祖先 span 结构（保留语法高亮）
+    var codeEl = pre.querySelector('code');
+    if (codeEl) {
+      var lines = [document.createDocumentFragment()];
+      var openStack = [];  // 当前未关闭的祖先元素 {original, clone}
+
+      function container() {
+        return openStack.length ? openStack[openStack.length - 1].clone : lines[lines.length - 1];
+      }
+      function startNewLine() {
+        lines.push(document.createDocumentFragment());
+        var parent = lines[lines.length - 1];
+        openStack.forEach(function(item) {
+          item.clone = item.original.cloneNode(false);
+          parent.appendChild(item.clone);
+          parent = item.clone;
+        });
+      }
+      function walk(node) {
+        Array.prototype.slice.call(node.childNodes).forEach(function(child) {
+          if (child.nodeType === 3) {
+            child.nodeValue.split('\n').forEach(function(part, i) {
+              if (i > 0) startNewLine();
+              if (part) container().appendChild(document.createTextNode(part));
+            });
+          } else if (child.nodeType === 1) {
+            var clone = child.cloneNode(false);
+            container().appendChild(clone);
+            openStack.push({ original: child, clone: clone });
+            walk(child);
+            openStack.pop();
+          }
+        });
+      }
+      walk(codeEl);
+
+      // 移除末尾空行（rouge 输出末尾的换行符会产生一个空行）
+      while (lines.length > 1 && lines[lines.length - 1].textContent === '') lines.pop();
+
+      // 重建：每行包裹 .code-line，\n 附加到行内末尾（保证复制含真实换行，
+      // 且避免行间独立文本节点在 pre-wrap 下被渲染为额外空行）
+      codeEl.textContent = '';
+      lines.forEach(function(frag, i) {
+        var span = document.createElement('span');
+        span.className = 'code-line';
+        span.appendChild(frag);
+        if (i < lines.length - 1) span.appendChild(document.createTextNode('\n'));
+        codeEl.appendChild(span);
+      });
     }
 
     var toolbar = document.createElement('div');
@@ -173,18 +237,31 @@ layout: default
       });
     });
 
-    // 换行切换按钮
+    // 换行切换按钮（默认自动换行，点击切换为水平滚动）
     var wrapBtn = document.createElement('button');
-    wrapBtn.className = 'code-toolbar-btn';
+    wrapBtn.className = 'code-toolbar-btn active';
     wrapBtn.title = '切换换行';
     wrapBtn.setAttribute('aria-label', '切换换行');
     wrapBtn.innerHTML = iconWrap + '<span>换行</span>';
     wrapBtn.addEventListener('click', function() {
       var isNowrap = pre.classList.toggle('nowrap');
-      wrapBtn.classList.toggle('active', isNowrap);
+      wrapBtn.classList.toggle('active', !isNowrap);
       wrapBtn.innerHTML = (isNowrap ? iconNoWrap : iconWrap) + '<span>' + (isNowrap ? '不换行' : '换行') + '</span>';
     });
 
+    // 行号切换按钮（默认显示行号，点击隐藏）
+    var lineNumBtn = document.createElement('button');
+    lineNumBtn.className = 'code-toolbar-btn active';
+    lineNumBtn.title = '切换行号';
+    lineNumBtn.setAttribute('aria-label', '切换行号');
+    lineNumBtn.innerHTML = iconLineNum + '<span>行号</span>';
+    lineNumBtn.addEventListener('click', function() {
+      var hidden = pre.classList.toggle('no-line-numbers');
+      lineNumBtn.classList.toggle('active', !hidden);
+      lineNumBtn.innerHTML = (hidden ? iconNoLineNum : iconLineNum) + '<span>' + (hidden ? '无行号' : '行号') + '</span>';
+    });
+
+    toolbar.appendChild(lineNumBtn);
     toolbar.appendChild(wrapBtn);
     toolbar.appendChild(copyBtn);
     pre.appendChild(toolbar);
