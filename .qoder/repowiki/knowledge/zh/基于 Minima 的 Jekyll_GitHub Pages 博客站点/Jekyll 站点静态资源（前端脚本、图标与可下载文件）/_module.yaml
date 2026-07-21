@@ -1,6 +1,6 @@
 schema_version: 1
 module_path: static_assets
-title: 静态资源与站点图标
+title: Jekyll 站点静态资源（前端脚本、图标与可下载文件）
 scope:
     - assets/
     - favicons/

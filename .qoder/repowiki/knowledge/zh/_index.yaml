@@ -3,11 +3,11 @@ schema_version: 1
 locale: zh-CN
 branch: master
 nodes_managed: true
-exported_at: "2026-07-22T03:29:11Z"
+exported_at: "2026-07-22T07:05:57Z"
 modules:
     "":
-        dir_name: GitHub Pages Jekyll 博客站点根
-        title: GitHub Pages Jekyll 博客站点根
+        dir_name: 基于 Minima 的 Jekyll_GitHub Pages 博客站点
+        title: 基于 Minima 的 Jekyll/GitHub Pages 博客站点
         scope:
             - README.md
             - .gitignore
@@ -110,8 +110,8 @@ modules:
         related_to:
             - path: theme_assets
     static_assets:
-        dir_name: 静态资源与站点图标
-        title: 静态资源与站点图标
+        dir_name: Jekyll 站点静态资源（前端脚本、图标与可下载文件）
+        title: Jekyll 站点静态资源（前端脚本、图标与可下载文件）
         scope:
             - assets/
             - favicons/
@@ -122,8 +122,8 @@ modules:
         related_to:
             - path: theme_assets
     theme_assets:
-        dir_name: 博客主题布局、片段与构建期插件
-        title: 博客主题布局、片段与构建期插件
+        dir_name: Jekyll 主题模板与构建期插件（基于 Minima）
+        title: Jekyll 主题模板与构建期插件（基于 Minima）
         scope:
             - _layouts/
             - _includes/

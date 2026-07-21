@@ -1,6 +1,6 @@
 schema_version: 1
 module_path: theme_assets
-title: 博客主题布局、片段与构建期插件
+title: Jekyll 主题模板与构建期插件（基于 Minima）
 scope:
     - _layouts/
     - _includes/
