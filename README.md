@@ -29,6 +29,8 @@
 lzc6244.github.io/
 ├── _config.yml          # 站点配置（标题、社交链接、Disqus、GA 等）
 ├── Gemfile              # Ruby 依赖声明
+├── .github/workflows/
+│   └── pages.yml        # GitHub Actions 构建部署 Pages 的 workflow
 ├── _includes/           # 可复用模板片段
 │   ├── head.html        #   <head> 标签（字体、CSS、favicon、GA）
 │   ├── header.html      #   顶部导航栏 + 搜索框
@@ -293,6 +295,25 @@ bundle exec jekyll serve
 
 > 改了 `_config.yml` 或新增/删除了大量文件后，建议 `rm -rf _site` 后重启，避免增量构建产生缓存冲突
 
+### 部署（GitHub Actions）
+
+站点通过 `.github/workflows/pages.yml` 由 GitHub Actions 构建并部署，而非 GitHub Pages 的默认分支构建。
+
+**为什么不用默认的 Pages 构建？**
+
+GitHub Pages 的默认构建流水线只允许白名单内的 gem 插件，**完全不执行 `_plugins/` 目录下的自定义插件**。这会导致依赖自定义插件的渲染结果与本地不一致，例如代码块中的 `{{ }}`（如 docker 的 `--format "{{.Name}}"`）会被 Liquid 当作模板变量解析成空字符串。改用 Actions 自建构建后，`escape_code_liquid.rb` 等插件全部生效，线上渲染与本地 `jekyll serve` 完全一致。
+
+**workflow 关键设计：**
+
+- **Ruby 版本 `4.0`**：让 Gemfile 走显式依赖分支（jekyll + minima + liquid 等），与本地环境一致；若使用 Ruby 3.x 会落入 `github-pages` 聚合 gem 分支，该 gem 会强制 `safe` 模式与插件白名单，`_plugins/` 又会被禁用
+- **构建命令**：`JEKYLL_ENV=production bundle exec jekyll build`，保留 Disqus 等对 production 环境的判断
+- **部署方式**：`actions/upload-pages-artifact` + `actions/deploy-pages`，并缓存 gem 依赖加速构建
+- **触发条件**：`master` 分支 push 自动触发，也支持手动运行
+
+**前置条件：**
+
+仓库 Settings → Pages → Build and deployment → Source 需从 "Deploy from a branch" 切换为 **"GitHub Actions"**，否则 GitHub 仍走旧的分支构建流水线，workflow 不会接管部署。
+
 ### Disqus 评论
 
 每篇文章底部自动加载 Disqus 评论区，由 `_config.yml` 中的 `disqus.shortname` 控制：
@@ -327,4 +348,4 @@ disqus:
 - **Inter 字体**（Google Fonts）+ **JetBrains Mono** 代码字体
 - **CSS Custom Properties** 设计令牌体系，clamp() 响应式排版
 - **自定义 Jekyll 插件**（Ruby）— Liquid 转义、分类过滤、Ruby 兼容
-- **GitHub Pages** 自动构建部署
+- **GitHub Actions** 构建部署 GitHub Pages（自定义插件在线上生效，渲染与本地一致）

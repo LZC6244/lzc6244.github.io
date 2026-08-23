@@ -75,3 +75,5 @@ scope:
 source_files: []
 depends_on: []
 related_to: []
+field_sources:
+    architecture_design: user

@@ -7,6 +7,7 @@
 - [.gitignore](file://.gitignore)
 - [.qoderignore](file://.qoderignore)
 - [README.md](file://README.md)
+- [.github/workflows/pages.yml](file://.github/workflows/pages.yml)
 - [_plugins/ruby34_compat.rb](file://_plugins/ruby34_compat.rb)
 - [_plugins/escape_code_liquid.rb](file://_plugins/escape_code_liquid.rb)
 - [_plugins/normalize_code_lang.rb](file://_plugins/normalize_code_lang.rb)
@@ -17,6 +18,8 @@
 
 ## 更新摘要
 **变更内容**
+- 新增 `.github/workflows/pages.yml`，站点改由 GitHub Actions 构建并部署到 GitHub Pages，`_plugins/` 自定义插件在线上构建中全部生效
+- README 同步补充项目结构中的 workflow 文件与「部署（GitHub Actions）」章节
 - 更新了 Gemfile 配置以支持 Ruby 4.0+ 环境，改进了依赖管理策略
 - 移除了 Gemfile.lock 的版本控制，避免本地与线上版本不一致问题
 - 简化了 .qoderignore 配置文件，仅保留必要的忽略规则
@@ -28,21 +31,23 @@
 3. [核心组件](#核心组件)
 4. [架构总览](#架构总览)
 5. [详细组件分析](#详细组件分析)
-6. [依赖分析](#依赖分析)
-7. [性能与构建特性](#性能与构建特性)
-8. [故障排查指南](#故障排查指南)
-9. [结论](#结论)
-10. [附录：本地开发与部署清单](#附录本地开发与部署清单)
+6. [GitHub Actions 部署流水线（pages.yml）](#github-actions-部署流水线pagesyml)
+7. [依赖分析](#依赖分析)
+8. [性能与构建特性](#性能与构建特性)
+9. [故障排查指南](#故障排查指南)
+10. [结论](#结论)
+11. [附录：本地开发与部署清单](#附录本地开发与部署清单)
 
 ## 简介
-本指南面向使用 Jekyll + GitHub Pages 搭建博客的开发者，提供从仓库命名、分支配置到自动构建流程的完整说明；并给出 Windows 与 Ubuntu 环境下的本地开发步骤（Ruby、Jekyll、Bundler 安装与镜像源配置）、依赖管理（Gemfile 与 bundle install）、本地预览（jekyll serve）以及提交后触发自动构建与常见构建失败原因及处理方法。
+本指南面向使用 Jekyll + GitHub Pages 搭建博客的开发者，提供从仓库命名、分支配置到自动构建流程的完整说明；并给出 Windows 与 Ubuntu 环境下的本地开发步骤（Ruby、Jekyll、Bundler 安装与镜像源配置）、依赖管理（Gemfile 与 bundle install）、本地预览（jekyll serve）、基于 GitHub Actions（`.github/workflows/pages.yml`）的构建部署流水线以及常见构建失败原因及处理方法。
 
-**更新** 本项目已优化对 Ruby 4.0+ 环境的支持，改进了依赖管理策略，移除了 Gemfile.lock 的版本控制以避免本地与线上版本不一致问题。
+**更新** 本项目已优化对 Ruby 4.0+ 环境的支持，改进了依赖管理策略，移除了 Gemfile.lock 的版本控制以避免本地与线上版本不一致问题；线上构建已从 GitHub Pages 默认分支构建切换为 GitHub Actions，使 `_plugins/` 自定义插件在线上全部生效。
 
 ## 项目结构
 本项目为典型的 Jekyll 站点结构，包含站点配置、主题、插件、文章与静态资源等。关键目录与文件如下：
 - _config.yml：站点全局配置（标题、URL、主题、插件等）
 - Gemfile：Ruby 依赖声明与版本约束（支持 Ruby 4.0+ 环境）
+- .github/workflows/pages.yml：GitHub Actions 构建部署 Pages 的 workflow（自定义构建流水线，非 Pages 默认分支构建）
 - .gitignore：版本控制忽略规则（已移除 Gemfile.lock）
 - .qoderignore：IDE 忽略规则（简化配置）
 - _includes/_layouts/_plugins：模板片段、页面布局与自定义插件
@@ -69,7 +74,7 @@ B --> L["_site<br/>生成产物"]
 - [.qoderignore:1-3](file://.qoderignore#L1-L3)
 
 章节来源
-- [README.md:26-62](file://README.md#L26-L62)
+- [README.md:26-64](file://README.md#L26-L64)
 
 ## 核心组件
 - 站点配置（_config.yml）
@@ -108,25 +113,27 @@ B --> L["_site<br/>生成产物"]
 - [_plugins/check_post_year_folder.rb:1-33](file://_plugins/check_post_year_folder.rb#L1-L33)
 
 ## 架构总览
-下图展示了本地开发与 GitHub Pages 自动构建的整体流程：本地通过 Bundler 锁定依赖，Jekyll 读取配置与插件渲染站点；将源码推送到 GitHub 后，GitHub Pages 基于仓库根目录进行构建并发布。
+下图展示了本地开发与 GitHub Actions 自动构建部署的整体流程：本地通过 Bundler 锁定依赖，Jekyll 读取配置与插件渲染站点；将源码推送到 GitHub 后，`.github/workflows/pages.yml` 定义的 Actions 流水线执行 `bundle exec jekyll build`（`_plugins/` 全部生效），产物上传并发布到 GitHub Pages。
 
-**更新** 新的架构支持 Ruby 4.0+ 本地环境，同时保持与 GitHub Pages Ruby 3.3.4 的兼容性。
+**更新** 站点已从 GitHub Pages 默认分支构建切换为 GitHub Actions 自建构建：线上使用 Ruby 4.0 + Gemfile 显式依赖分支，与本地环境一致，自定义插件在线上全部生效。
 
 ```mermaid
 sequenceDiagram
 participant Dev as "开发者"
 participant Local as "本地环境<br/>Ruby 4.0+/Bundler/Jekyll"
 participant GH as "GitHub 仓库"
-participant GP as "GitHub Pages 构建器<br/>Ruby 3.3.4"
+participant GA as "GitHub Actions<br/>pages.yml / Ruby 4.0"
+participant GP as "GitHub Pages"
 participant Site as "站点访问者"
 Dev->>Local : 编写文章/修改配置
 Local->>Local : bundle install (Ruby 4.0+ 直接依赖)
 Local->>Local : bundle exec jekyll serve
 Local-->>Dev : 本地预览 http : //127.0.0.1 : 4000/
-Dev->>GH : git push 推送源码 (不含 Gemfile.lock)
-GH->>GP : 触发 Pages 构建
-GP->>GP : 解析 _config.yml/Gemfile (Ruby 3.3.4)
-GP->>GP : 安装 github-pages 聚合包并执行构建
+Dev->>GH : git push 推送源码到 master (不含 Gemfile.lock)
+GH->>GA : 触发 pages.yml workflow
+GA->>GA : Setup Ruby 4.0 + bundler-cache
+GA->>GA : JEKYLL_ENV=production bundle exec jekyll build（_plugins 生效）
+GA->>GP : upload-pages-artifact + deploy-pages
 GP-->>Site : 发布站点至 https : //username.github.io/
 ```
 
@@ -134,7 +141,7 @@ GP-->>Site : 发布站点至 https : //username.github.io/
 - [_config.yml:1-45](file://_config.yml#L1-L45)
 - [Gemfile:1-25](file://Gemfile#L1-L25)
 - [.gitignore:137-139](file://.gitignore#L137-L139)
-- [README.md:64-132](file://README.md#L64-L132)
+- [README.md:66-134](file://README.md#L66-L134)
 
 ## 详细组件分析
 
@@ -250,6 +257,29 @@ class check_post_year_folder {
 - [_plugins/check_missing_images.rb:1-38](file://_plugins/check_missing_images.rb#L1-L38)
 - [_plugins/check_post_year_folder.rb:1-33](file://_plugins/check_post_year_folder.rb#L1-L33)
 
+## GitHub Actions 部署流水线（pages.yml）
+站点通过 `.github/workflows/pages.yml` 由 GitHub Actions 构建并部署，而非 GitHub Pages 的默认分支构建。
+
+### 为什么不用默认的 Pages 构建
+- GitHub Pages 的默认构建流水线只允许白名单内的 gem 插件，**完全不执行 `_plugins/` 目录下的自定义插件**
+- 这会导致依赖自定义插件的渲染结果与本地不一致，例如代码块中的 `{{ }}`（如 docker 的 `--format "{{.Name}}"`）会被 Liquid 当作模板变量解析成空字符串
+- 改用 Actions 自建构建后，`escape_code_liquid.rb` 等插件全部生效，线上渲染与本地 `bundle exec jekyll serve` 完全一致
+
+### workflow 关键设计
+- **触发条件**：`master` 分支 push 自动触发（`on.push.branches: [master]`），也支持手动运行（`workflow_dispatch`）
+- **权限与并发**：`permissions` 声明 `contents: read` / `pages: write` / `id-token: write`；`concurrency.group: pages` 且 `cancel-in-progress: false`，保证同一时刻只有一次部署且不中断进行中的生产部署
+- **Ruby 版本 `4.0`**：让 Gemfile 走显式依赖分支（jekyll + minima + liquid 等），与本地环境一致；若使用 Ruby 3.x 会落入 `github-pages` 聚合 gem 分支，该 gem 会强制 `safe` 模式与插件白名单，`_plugins/` 又会被禁用
+- **构建命令**：`JEKYLL_ENV=production bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"`，保留 Disqus 等对 production 环境的判断
+- **依赖缓存**：`ruby/setup-ruby@v1` 的 `bundler-cache: true` 自动执行 bundle install 并缓存 gem 依赖加速构建
+- **部署方式**：build 任务经 `actions/upload-pages-artifact@v3` 上传 `_site`，deploy 任务用 `actions/deploy-pages@v4` 发布到 `github-pages` environment
+
+### 前置条件
+- 仓库 Settings → Pages → Build and deployment → Source 需从 "Deploy from a branch" 切换为 **"GitHub Actions"**，否则 GitHub 仍走旧的分支构建流水线，workflow 不会接管部署
+
+**章节来源**
+- [.github/workflows/pages.yml:1-65](file://.github/workflows/pages.yml#L1-L65)
+- [README.md:298-315](file://README.md#L298-L315)
+
 ## 依赖分析
 - **更新** 直接依赖
   - jekyll (~> 3.9)、minima (~> 2.5)、liquid (>= 4.0.4)、kramdown-parser-gfm、webrick、csv、base64、bigdecimal（Ruby 4.0+ 分支）
@@ -296,11 +326,11 @@ RG["github-pages (Ruby < 4.0)"] -.-> J
   - 缺失图片与年份不匹配检查有助于提前发现问题
 - **更新** 版本兼容性
   - Ruby 4.0+ 本地环境使用直接依赖，避免 github-pages 聚合包的版本限制
-  - GitHub Pages 线上环境继续使用 Ruby 3.3.4 和 github-pages 聚合包
+  - 线上构建已切换为 GitHub Actions（Ruby 4.0 + 显式依赖分支），与本地环境一致，不再依赖 Pages 默认的 Ruby 3.3.4 分支构建
 
 **章节来源**
 - [Gemfile:24-25](file://Gemfile#L24-L25)
-- [README.md:281-294](file://README.md#L281-L294)
+- [README.md:283-296](file://README.md#L283-L296)
 - [_plugins/escape_code_liquid.rb:1-62](file://_plugins/escape_code_liquid.rb#L1-L62)
 - [_plugins/normalize_code_lang.rb:1-42](file://_plugins/normalize_code_lang.rb#L1-L42)
 - [_plugins/check_missing_images.rb:1-38](file://_plugins/check_missing_images.rb#L1-L38)
@@ -321,12 +351,15 @@ RG["github-pages (Ruby < 4.0)"] -.-> J
 - 代码块语言高亮异常
   - 使用规范的语言标识符；normalize_code_lang 会自动修正常见别名与大小写问题
 - **更新** 本地与线上行为不一致
-  - 由于移除了 Gemfile.lock 的版本控制，本地 Ruby 4.0+ 与线上 Ruby 3.3.4 可能产生差异
-  - 建议使用 Docker 或虚拟机模拟线上环境进行验证
+  - 线上已改用 GitHub Actions（Ruby 4.0 + 显式依赖分支）构建，与本地环境一致；若发现仍不一致，先确认 Pages Source 已切换为 "GitHub Actions"
   - 关注 liquid gem 版本要求（>= 4.0.4）以确保 Ruby 3.4+ 兼容性
+- **新增** workflow 未接管部署（push 后仍走旧构建）
+  - 检查仓库 Settings → Pages → Build and deployment → Source 是否为 "GitHub Actions"
+  - 确认推送的是 master 分支（workflow 仅监听 master），或手动通过 workflow_dispatch 运行
+  - 检查 Actions 运行日志中的 Ruby 版本是否为 4.0（避免落入 github-pages 聚合 gem 分支导致 `_plugins/` 被禁用）
 
 **章节来源**
-- [README.md:64-132](file://README.md#L64-L132)
+- [README.md:66-134](file://README.md#L66-L134)
 - [Gemfile:1-25](file://Gemfile#L1-L25)
 - [.gitignore:137-139](file://.gitignore#L137-L139)
 - [_plugins/check_missing_images.rb:1-38](file://_plugins/check_missing_images.rb#L1-L38)
@@ -343,11 +376,10 @@ RG["github-pages (Ruby < 4.0)"] -.-> J
   - 用户主页：username.github.io（例如 lzc6244.github.io）
   - 组织页：orgname.github.io
 - 分支配置
-  - 推荐 main 分支作为默认分支
-  - 旧仓库可能使用 master，迁移后建议统一为 main
+  - 本仓库使用 master 分支作为默认分支，pages.yml workflow 仅监听 master 分支的 push
 - 自动构建
-  - GitHub Pages 默认从仓库根目录构建，无需额外工作流文件
-  - 推送代码到默认分支即触发构建与发布
+  - 站点不再使用 GitHub Pages 默认分支构建，而是由 `.github/workflows/pages.yml` 定义的 GitHub Actions 流水线构建部署
+  - 推送代码到 master 分支即触发构建与发布；首次启用需将 Pages Source 切换为 "GitHub Actions"
 
 ### 本地开发环境搭建（Windows）
 - 安装 Ruby+Devkit
@@ -363,7 +395,7 @@ RG["github-pages (Ruby < 4.0)"] -.-> J
   - 使用 bundle exec jekyll serve 启动本地预览
 
 **章节来源**
-- [README.md:66-96](file://README.md#L66-L96)
+- [README.md:68-98](file://README.md#L68-L98)
 
 ### 本地开发环境搭建（Ubuntu）
 - 安装系统依赖
@@ -379,7 +411,7 @@ RG["github-pages (Ruby < 4.0)"] -.-> J
   - 使用 bundle exec jekyll serve 启动本地预览
 
 **章节来源**
-- [README.md:98-132](file://README.md#L98-L132)
+- [README.md:100-134](file://README.md#L100-L134)
 
 ### 依赖管理与构建命令
 - **更新** 依赖管理
@@ -393,21 +425,22 @@ RG["github-pages (Ruby < 4.0)"] -.-> J
 **章节来源**
 - [Gemfile:1-25](file://Gemfile#L1-L25)
 - [.gitignore:137-139](file://.gitignore#L137-L139)
-- [README.md:281-294](file://README.md#L281-L294)
+- [README.md:283-296](file://README.md#L283-L296)
 
 ### 提交后触发自动构建与常见问题
 - 触发方式
-  - 将源码推送到默认分支（main/master），GitHub Pages 自动构建并发布
+  - 将源码推送到 master 分支，GitHub Actions 自动构建并发布（前提：Pages Source 已切换为 "GitHub Actions"）
+  - 也可在 Actions 页面通过 workflow_dispatch 手动触发
 - **更新** 常见失败原因与解决
-  - Ruby 版本不匹配：确保本地与线上版本一致，或按 Gemfile 分支策略调整
-  - 依赖缺失：使用 bundle install 安装所有依赖，并使用 bundle exec 运行
+  - Ruby 版本不匹配：确保 workflow 使用 Ruby 4.0（走 Gemfile 显式依赖分支），避免落入 github-pages 聚合 gem 分支
+  - 依赖缺失：本地使用 bundle install 安装所有依赖，并使用 bundle exec 运行
   - 网络问题：配置国内镜像源
   - 图片缺失：检查图片路径与文件是否存在
   - 分类异常：确认 front matter 中 categories 定义，避免依赖目录名作为分类
-  - **新增** 版本冲突：由于移除了 Gemfile.lock，确保本地 Ruby 4.0+ 环境与线上 Ruby 3.3.4 的兼容性
+  - 版本冲突：由于移除了 Gemfile.lock，线上由 bundler-cache 重新解析依赖，需关注 liquid gem 版本要求（>= 4.0.4）
 
 **章节来源**
-- [README.md:64-132](file://README.md#L64-L132)
+- [README.md:66-134](file://README.md#L66-L134)
 - [Gemfile:1-25](file://Gemfile#L1-L25)
 - [.gitignore:137-139](file://.gitignore#L137-L139)
 - [_plugins/check_missing_images.rb:1-38](file://_plugins/check_missing_images.rb#L1-L38)
